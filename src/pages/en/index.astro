@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import Photo from '../../components/Photo.astro';
 import SagHallo from '../../components/SagHallo.astro';
+import HalloChat from '../../components/HalloChat.astro';
 ---
 <Base title="Treibhaus Donaufeld – a house with an open door" lang="en" alternate="/" description="Two rooms for the whole neighbourhood in Donaufeld, Vienna: open offers and room booking without an account.">
   <section class="wrap section hero">
@@ -27,6 +28,7 @@ import SagHallo from '../../components/SagHallo.astro';
     </div>
   </section>
   <SagHallo lang="en" />
+  <HalloChat lang="en" />
 </Base>
 <style>.hero { display: grid; gap: 48px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 400px), 1fr)); align-items: end; }
 .house-photo { max-width: 480px; }</style>

@@ -5,6 +5,7 @@ import EventList from '../components/EventList.astro';
 import Newsletter from '../components/Newsletter.astro';
 import Photo from '../components/Photo.astro';
 import SagHallo from '../components/SagHallo.astro';
+import HalloChat from '../components/HalloChat.astro';
 import { getDb } from '../lib/db';
 import { upcomingEvents } from '../lib/booking/service';
 
@@ -85,6 +86,7 @@ const nl = Astro.url.searchParams.get('newsletter');
   </section>
 
   <SagHallo />
+  <HalloChat />
 
   <section class="wrap section grid-2">
     <div>
