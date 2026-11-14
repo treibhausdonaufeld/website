@@ -11,6 +11,7 @@ const T = de
       close: 'Chat schließen',
       title: 'Sag Hallo',
       sub: 'Schreib mit Menschen aus dem Treibhaus',
+      human: 'Kein KI-Bot: Hier chattest du mit echten Menschen aus dem Haus. Bitte sei freundlich 🙂',
       empty: 'Schreib uns einfach. Jemand aus dem Haus antwortet hier, sobald er oder sie es sieht – das kann auch ein paar Stunden dauern.',
       name: 'Dein Name (freiwillig)',
       msg: 'Nachricht',
@@ -28,6 +29,7 @@ const T = de
       close: 'Close chat',
       title: 'Say hello',
       sub: 'Chat with people from the Treibhaus',
+      human: 'Not an AI bot: you are chatting with real people from the house. Please be kind 🙂',
       empty: 'Just write. Someone from the house will answer here when they see it – this can take a few hours.',
       name: 'Your name (optional)',
       msg: 'Message',
@@ -52,6 +54,7 @@ const T = de
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
       </button>
     </header>
+    <p class="human">{T.human}</p>
     <div class="log" role="log" aria-live="polite" aria-label={T.title} data-log>
       <p class="empty" data-empty>{T.empty}</p>
     </div>
@@ -233,6 +236,7 @@ const T = de
   .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; background: var(--band); color: var(--on-band); padding: 14px 14px 14px 18px; }
   .title { font-size: 20px; margin: 0; color: var(--on-band); letter-spacing: -0.01em; }
   .sub { margin: 2px 0 0; font-size: 14px; color: var(--on-band-2); }
+  .human { flex: none; margin: 0; padding: 8px 18px; font-size: 13px; font-weight: 600; line-height: 1.4; background: var(--surface-2); color: var(--ink); border-bottom: 1px solid var(--line); }
   .x { background: transparent; border: 0; color: var(--on-band); cursor: pointer; padding: 4px; border-radius: 6px; display: inline-flex; }
   .x:hover { background: color-mix(in srgb, var(--on-band) 15%, transparent); }
 
