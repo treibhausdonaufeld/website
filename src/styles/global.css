@@ -8,6 +8,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Platz für den mitlaufenden Kopf bei Sprüngen zu Ankern (#hallo, #anfahrt …) */
+  scroll-padding-top: 96px;
 }
 
 /* Weiche Überblendung beim Seitenwechsel (Cross-Document View Transitions,

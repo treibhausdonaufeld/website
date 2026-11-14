@@ -119,6 +119,8 @@ const T = de
       }
     }
     toggle.addEventListener('click', () => setOpen(!isOpen()));
+    // „Jetzt im Chat hallo sagen“ im Sag-hallo-Abschnitt (oder Link auf /#chat)
+    document.addEventListener('hallo:open', () => { if (!box!.hidden) setOpen(true); });
     closeBtn.addEventListener('click', () => { setOpen(false); toggle.focus(); });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && isOpen()) { setOpen(false); toggle.focus(); }
@@ -156,7 +158,12 @@ const T = de
         const res = await fetch(`/api/hallo?nach=${lastId}`, { headers: { Accept: 'application/json' } });
         const data = await res.json();
         if (!data.enabled && !seen.size) return;
+        const wasHidden = box!.hidden;
         box!.hidden = false;
+        if (wasHidden && location.hash === '#chat') {
+          setOpen(true);
+          history.replaceState(null, '', location.pathname + location.search);
+        }
         if (data.name && !name.value) name.value = data.name;
         idle = render(data.messages) ? 0 : idle + 1;
       } catch {

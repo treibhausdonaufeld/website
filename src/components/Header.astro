@@ -45,7 +45,7 @@ const L = t[lang];
   }
 </script>
 <style>
-  .site-header { border-bottom: 1px solid var(--line); background: var(--bg); }
+  .site-header { position: sticky; top: 0; z-index: 40; border-bottom: 1px solid var(--line); background: var(--bg); }
   .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 40px; padding-top: 18px; padding-bottom: 18px; }
   .bar > :global(:first-child) { margin-right: auto; }
   .menu { display: flex; align-items: center; gap: 12px 40px; }
@@ -76,7 +76,7 @@ const L = t[lang];
     /* Mit JavaScript: zugeklappt, bis der Knopf gedrückt wird. */
     :global(.js) .menu-btn { display: inline-flex; }
     :global(.js) .menu { display: none; }
-    :global(.js) [data-open] .menu { display: flex; }
+    :global(.js) [data-open] .menu { display: flex; max-height: calc(100dvh - 76px); overflow-y: auto; padding-bottom: 16px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .burger i { transition: none; }
