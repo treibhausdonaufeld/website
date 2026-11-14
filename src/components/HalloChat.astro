@@ -1,0 +1,273 @@
+---
+// Schwebende Chat-Blase (unten rechts) für den Chat ohne Konto.
+// Wird nur eingeblendet, wenn der Matrix-Bot verbunden ist (oder schon ein Gespräch existiert).
+import { MATRIX_ROOM, MATRIX_URL } from '../lib/i18n';
+interface Props { lang?: 'de' | 'en' }
+const { lang = 'de' } = Astro.props;
+const de = lang === 'de';
+const T = de
+  ? {
+      label: 'Sag Hallo',
+      close: 'Chat schließen',
+      title: 'Sag Hallo',
+      sub: 'Schreib mit Menschen aus dem Treibhaus',
+      human: 'Kein KI-Bot: Hier chattest du mit echten Menschen aus dem Haus. Bitte sei freundlich 🙂',
+      empty: 'Schreib uns einfach. Jemand aus dem Haus antwortet hier, sobald er oder sie es sieht – das kann auch ein paar Stunden dauern.',
+      name: 'Dein Name (freiwillig)',
+      msg: 'Nachricht',
+      placeholder: 'Nachricht schreiben …',
+      send: 'Senden',
+      sending: 'Wird gesendet …',
+      note: `Deine Nachricht erscheint im offenen Matrix-Raum ${MATRIX_ROOM} – alle dort können sie lesen. Antworten siehst du hier in diesem Browser (30 Tage lang). Bitte keine sensiblen Daten.`,
+      you: 'Du',
+      team: 'Treibhaus',
+      error: 'Das hat nicht geklappt. Bitte versuch es gleich noch einmal oder schreib uns per Mail.',
+      orMatrix: 'Lieber mit eigenem Konto? Im Matrix-Raum hallo sagen',
+    }
+  : {
+      label: 'Say hello',
+      close: 'Close chat',
+      title: 'Say hello',
+      sub: 'Chat with people from the Treibhaus',
+      human: 'Not an AI bot: you are chatting with real people from the house. Please be kind 🙂',
+      empty: 'Just write. Someone from the house will answer here when they see it – this can take a few hours.',
+      name: 'Your name (optional)',
+      msg: 'Message',
+      placeholder: 'Write a message …',
+      send: 'Send',
+      sending: 'Sending …',
+      note: `Your message appears in the open Matrix room ${MATRIX_ROOM} – everyone there can read it. You will see replies here in this browser (for 30 days). Please do not share sensitive data.`,
+      you: 'You',
+      team: 'Treibhaus',
+      error: 'That did not work. Please try again in a moment or write to us by email.',
+      orMatrix: 'Prefer your own account? Say hello on Matrix',
+    };
+---
+<div class="hc" data-hallo hidden data-you={T.you} data-team={T.team} data-sending={T.sending} data-send-label={T.send} data-error={T.error} data-lang={lang}>
+  <div class="panel" id="hallo-panel" role="dialog" aria-labelledby="hallo-panel-h" data-panel hidden>
+    <header class="head">
+      <div>
+        <h2 id="hallo-panel-h" class="title">{T.title}</h2>
+        <p class="sub">{T.sub}</p>
+      </div>
+      <button class="x" type="button" aria-label={T.close} data-close>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
+      </button>
+    </header>
+    <p class="human">{T.human}</p>
+    <div class="log" role="log" aria-live="polite" aria-label={T.title} data-log>
+      <p class="empty" data-empty>{T.empty}</p>
+    </div>
+    <form data-form novalidate>
+      <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label></div>
+      <label class="sr" for={`hc-name-${lang}`}>{T.name}</label>
+      <input id={`hc-name-${lang}`} type="text" name="name" maxlength="40" autocomplete="given-name" placeholder={T.name} />
+      <label class="sr" for={`hc-text-${lang}`}>{T.msg}</label>
+      <div class="compose">
+        <textarea id={`hc-text-${lang}`} name="text" rows="2" maxlength="1000" required placeholder={T.placeholder}></textarea>
+        <button class="btn send" type="submit" data-send>{T.send}</button>
+      </div>
+      <p class="err" role="alert" data-err></p>
+      <p class="note">{T.note}</p>
+      <p class="note"><a href={MATRIX_URL}>{T.orMatrix}</a></p>
+    </form>
+  </div>
+
+  <button class="bubble" type="button" aria-expanded="false" aria-controls="hallo-panel" data-toggle>
+    <svg class="ico" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A2.5 2.5 0 0 1 4 13.5z" fill="currentColor" />
+    </svg>
+    <span class="lbl">{T.label}</span>
+    <span class="dot" data-dot hidden></span>
+  </button>
+</div>
+<script>
+  interface Msg { id: number; from: 'gast' | 'team'; author: string | null; text: string; at: number }
+
+  const box = document.querySelector<HTMLElement>('[data-hallo]');
+  if (box) {
+    const panel = box.querySelector<HTMLElement>('[data-panel]')!;
+    const toggle = box.querySelector<HTMLButtonElement>('[data-toggle]')!;
+    const closeBtn = box.querySelector<HTMLButtonElement>('[data-close]')!;
+    const dot = box.querySelector<HTMLElement>('[data-dot]')!;
+    const log = box.querySelector<HTMLElement>('[data-log]')!;
+    const empty = box.querySelector<HTMLElement>('[data-empty]')!;
+    const form = box.querySelector<HTMLFormElement>('[data-form]')!;
+    const err = box.querySelector<HTMLElement>('[data-err]')!;
+    const btn = box.querySelector<HTMLButtonElement>('[data-send]')!;
+    const text = form.elements.namedItem('text') as HTMLTextAreaElement;
+    const name = form.elements.namedItem('name') as HTMLInputElement;
+    const d = box.dataset;
+    const locale = d.lang === 'en' ? 'en-GB' : 'de-AT';
+    const seen = new Set<number>();
+    let lastId = 0;
+    let timer: number | undefined;
+    let idle = 0;
+    let first = true;
+
+    const time = (ms: number) => new Date(ms).toLocaleString(locale, { weekday: 'short', hour: '2-digit', minute: '2-digit' });
+    const isOpen = () => !panel.hidden;
+
+    function setOpen(open: boolean) {
+      panel.hidden = !open;
+      box!.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) {
+        dot.hidden = true;
+        log.scrollTop = log.scrollHeight;
+        text.focus();
+      }
+    }
+    toggle.addEventListener('click', () => setOpen(!isOpen()));
+    closeBtn.addEventListener('click', () => { setOpen(false); toggle.focus(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen()) { setOpen(false); toggle.focus(); }
+    });
+
+    function render(list: Msg[]) {
+      let added = false;
+      let fromTeam = false;
+      for (const m of list) {
+        if (seen.has(m.id)) continue;
+        seen.add(m.id);
+        lastId = Math.max(lastId, m.id);
+        const el = document.createElement('div');
+        el.className = `msg ${m.from}`;
+        const meta = document.createElement('span');
+        meta.className = 'meta';
+        meta.textContent = `${m.from === 'gast' ? d.you : `${m.author ?? d.team}`} · ${time(m.at)}`;
+        const body = document.createElement('p');
+        body.textContent = m.text;
+        el.append(meta, body);
+        log.append(el);
+        added = true;
+        if (m.from === 'team') fromTeam = true;
+      }
+      if (added) {
+        empty.hidden = true;
+        log.scrollTop = log.scrollHeight;
+        if (fromTeam && !first && !isOpen()) dot.hidden = false;
+      }
+      return added;
+    }
+
+    async function poll() {
+      try {
+        const res = await fetch(`/api/hallo?nach=${lastId}`, { headers: { Accept: 'application/json' } });
+        const data = await res.json();
+        if (!data.enabled && !seen.size) return;
+        box!.hidden = false;
+        if (data.name && !name.value) name.value = data.name;
+        idle = render(data.messages) ? 0 : idle + 1;
+      } catch {
+        idle++;
+      }
+      first = false;
+      schedule();
+    }
+
+    function schedule() {
+      clearTimeout(timer);
+      if (!seen.size) return; // ohne Gespräch nicht nachfragen
+      // aktiv: alle 5 s, nach 5 Min. ohne Neues alle 20 s, im Hintergrund-Tab alle 60 s
+      const ms = document.hidden ? 60_000 : idle > 60 ? 20_000 : 5_000;
+      timer = window.setTimeout(poll, ms);
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && seen.size) { idle = 0; poll(); }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      err.textContent = '';
+      if (!text.value.trim()) { text.focus(); return; }
+      btn.disabled = true;
+      btn.textContent = d.sending!;
+      try {
+        const res = await fetch('/api/hallo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ name: name.value, text: text.value, website: (form.elements.namedItem('website') as HTMLInputElement).value }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || data.error) throw new Error(data.error || d.error);
+        text.value = '';
+        render(data.messages ?? []);
+        idle = 0;
+        schedule();
+      } catch (e2) {
+        err.textContent = (e2 as Error).message || d.error!;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = d.sendLabel!;
+      }
+    });
+
+    // Enter sendet, Umschalt+Enter macht eine neue Zeile
+    text.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
+    });
+
+    poll();
+  }
+</script>
+<style>
+  .hc { position: fixed; right: 24px; bottom: 24px; z-index: 50; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+  .hc[hidden], .hc [hidden] { display: none !important; }
+
+  .bubble {
+    position: relative; display: inline-flex; align-items: center; gap: 10px;
+    background: var(--primary); color: var(--on-primary); border: 0; cursor: pointer;
+    font: inherit; font-weight: 700; font-size: 17px; padding: 14px 22px 14px 18px; border-radius: 999px;
+    box-shadow: 0 6px 20px rgb(0 0 0 / 0.22), 0 2px 6px rgb(0 0 0 / 0.12);
+    transition: background 0.15s, transform 0.15s;
+  }
+  .bubble:hover { background: var(--primary-hover); transform: translateY(-1px); }
+  .bubble:focus-visible { outline: 3px solid var(--link); outline-offset: 3px; }
+  .ico { flex: none; }
+  .dot { position: absolute; top: 4px; right: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--err); border: 2px solid var(--surface); }
+
+  .panel {
+    width: min(380px, calc(100vw - 32px)); max-height: min(620px, calc(100vh - 120px));
+    display: flex; flex-direction: column; overflow: hidden;
+    background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: 0 16px 48px rgb(0 0 0 / 0.25);
+  }
+  .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; background: var(--band); color: var(--on-band); padding: 14px 14px 14px 18px; }
+  .title { font-size: 20px; margin: 0; color: var(--on-band); letter-spacing: -0.01em; }
+  .sub { margin: 2px 0 0; font-size: 14px; color: var(--on-band-2); }
+  .human { flex: none; margin: 0; padding: 8px 18px; font-size: 13px; font-weight: 600; line-height: 1.4; background: var(--surface-2); color: var(--ink); border-bottom: 1px solid var(--line); }
+  .x { background: transparent; border: 0; color: var(--on-band); cursor: pointer; padding: 4px; border-radius: 6px; display: inline-flex; }
+  .x:hover { background: color-mix(in srgb, var(--on-band) 15%, transparent); }
+
+  .log { flex: 1 1 auto; min-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 16px; background: var(--bg); }
+  .empty { color: var(--muted); font-size: 15px; margin: 0; }
+  .log :global(.msg) { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 15px; line-height: 1.45; }
+  .log :global(.msg p) { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .log :global(.msg .meta) { display: block; font-size: 12px; font-weight: 700; opacity: 0.8; margin-bottom: 2px; }
+  .log :global(.msg.gast) { align-self: flex-end; background: var(--primary); color: var(--on-primary); border-bottom-right-radius: 3px; }
+  .log :global(.msg.team) { align-self: flex-start; background: var(--surface-2); color: var(--ink); border-bottom-left-radius: 3px; }
+
+  form { padding: 12px 16px 14px; border-top: 1px solid var(--line); flex: none; }
+  input[type='text'], textarea { width: 100%; background: var(--surface); color: var(--ink); border: 2px solid var(--line-strong); border-radius: 8px; font: inherit; font-size: 15px; padding: 8px 10px; }
+  input[type='text']:focus, textarea:focus { border-color: var(--primary); outline: none; }
+  input[type='text'] { margin-bottom: 8px; }
+  .compose { display: flex; gap: 8px; align-items: stretch; }
+  textarea { resize: none; min-height: 48px; }
+  .send { flex: none; }
+  .err { color: var(--err-text); font-weight: 600; font-size: 14px; margin: 8px 0 0; }
+  .err:empty { display: none; }
+  .note { color: var(--muted); font-size: 12px; line-height: 1.4; margin: 8px 0 0; }
+  .note a { color: var(--link); }
+  .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+
+  /* Mobil: nur das Chat-Symbol, offen fast bildschirmfüllend */
+  @media (max-width: 640px) {
+    .hc { right: 16px; bottom: 16px; }
+    .bubble { width: 56px; height: 56px; padding: 0; justify-content: center; }
+    .lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .panel { width: calc(100vw - 32px); max-height: calc(100dvh - 104px); }
+  }
+  @media (prefers-reduced-motion: reduce) { .bubble { transition: none; } .bubble:hover { transform: none; } }
+</style>
