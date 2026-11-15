@@ -27,6 +27,8 @@ const T = de
       team: 'Treibhaus',
       error: 'Das hat nicht geklappt. Bitte versuch es gleich noch einmal oder schreib uns per Mail.',
       orMatrix: 'Lieber mit eigenem Konto? Im Matrix-Raum hallo sagen',
+      privacy: 'Datenschutz',
+      privacyHref: '/datenschutz',
     }
   : {
       label: 'Say hello',
@@ -48,6 +50,8 @@ const T = de
       team: 'Treibhaus',
       error: 'That did not work. Please try again in a moment or write to us by email.',
       orMatrix: 'Prefer your own account? Say hello on Matrix',
+      privacy: 'Privacy',
+      privacyHref: '/datenschutz#english',
     };
 ---
 <div class="hc" data-hallo hidden data-you={T.you} data-team={T.team} data-sending={T.sending} data-send-label={T.send} data-error={T.error} data-lang={lang}>
@@ -78,7 +82,7 @@ const T = de
         <button class="btn send" type="submit" data-send>{T.send}</button>
       </div>
       <p class="err" role="alert" data-err></p>
-      <p class="note">{T.noteA}<span data-room>{config.halloChat.room}</span>{T.noteB}</p>
+      <p class="note">{T.noteA}<span data-room>{config.halloChat.room}</span>{T.noteB} <a href={T.privacyHref}>{T.privacy}</a></p>
       <p class="note"><a href={MATRIX_URL}>{T.orMatrix}</a></p>
     </form>
   </div>
