@@ -33,6 +33,7 @@ const L = t[lang];
           <li><a href="/datenschutz#english">Privacy</a></li>
         </>
       )}
+      <li><a href="/admin/" rel="nofollow">{lang === 'de' ? 'Intern' : 'Internal'}</a></li>
       <li><a href={L.otherLang.href} lang={lang === 'de' ? 'en' : 'de'}>{L.otherLang.label}</a></li>
       <li><button type="button" class="linkbtn theme" data-theme-toggle data-dark={L.dark} data-light={L.light} hidden><span aria-hidden="true">◐</span> <span data-label>{L.dark}</span></button></li>
     </ul>
