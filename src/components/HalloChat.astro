@@ -15,12 +15,14 @@ const T = de
       human: 'Kein KI-Bot: Hier chattest du mit echten Menschen aus dem Haus. Bitte sei freundlich 🙂',
       empty: 'Schreib uns einfach. Jemand aus dem Haus antwortet hier, sobald er oder sie es sieht – das kann auch ein paar Stunden dauern.',
       name: 'Dein Name (freiwillig)',
+      contact: 'Telefon oder E-Mail (empfohlen)',
+      contactHint: 'Wir sind echte Menschen mit Alltag und können nicht immer sofort antworten. Hinterlass Telefon oder E-Mail, dann melden wir uns auch so bei dir.',
       msg: 'Nachricht',
       placeholder: 'Nachricht schreiben …',
       send: 'Senden',
       sending: 'Wird gesendet …',
-      noteA: 'Deine Nachricht erscheint im Matrix-Raum ',
-      noteB: ' – alle dort können sie lesen. Antworten siehst du hier in diesem Browser (30 Tage lang). Bitte keine sensiblen Daten.',
+      noteA: 'Deine Nachricht und dein Kontakt erscheinen im Matrix-Raum ',
+      noteB: ' – alle dort können sie lesen. Antworten siehst du hier in diesem Browser (30 Tage lang). Bitte sonst keine sensiblen Daten.',
       you: 'Du',
       team: 'Treibhaus',
       error: 'Das hat nicht geklappt. Bitte versuch es gleich noch einmal oder schreib uns per Mail.',
@@ -34,12 +36,14 @@ const T = de
       human: 'Not an AI bot: you are chatting with real people from the house. Please be kind 🙂',
       empty: 'Just write. Someone from the house will answer here when they see it – this can take a few hours.',
       name: 'Your name (optional)',
+      contact: 'Phone or email (recommended)',
+      contactHint: 'We are real people with everyday lives and cannot always answer right away. Leave a phone number or email and we will get back to you.',
       msg: 'Message',
       placeholder: 'Write a message …',
       send: 'Send',
       sending: 'Sending …',
-      noteA: 'Your message appears in the Matrix room ',
-      noteB: ' – everyone there can read it. You will see replies here in this browser (for 30 days). Please do not share sensitive data.',
+      noteA: 'Your message and contact details appear in the Matrix room ',
+      noteB: ' – everyone there can read them. You will see replies here in this browser (for 30 days). Please do not share any other sensitive data.',
       you: 'You',
       team: 'Treibhaus',
       error: 'That did not work. Please try again in a moment or write to us by email.',
@@ -65,6 +69,9 @@ const T = de
       <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label></div>
       <label class="sr" for={`hc-name-${lang}`}>{T.name}</label>
       <input id={`hc-name-${lang}`} type="text" name="name" maxlength="40" autocomplete="given-name" placeholder={T.name} />
+      <p class="c-hint" id={`hc-contact-hint-${lang}`}>{T.contactHint}</p>
+      <label class="sr" for={`hc-contact-${lang}`}>{T.contact}</label>
+      <input id={`hc-contact-${lang}`} type="text" name="contact" maxlength="100" autocomplete="email" placeholder={T.contact} aria-describedby={`hc-contact-hint-${lang}`} />
       <label class="sr" for={`hc-text-${lang}`}>{T.msg}</label>
       <div class="compose">
         <textarea id={`hc-text-${lang}`} name="text" rows="2" maxlength="1000" required placeholder={T.placeholder}></textarea>
@@ -100,6 +107,7 @@ const T = de
     const btn = box.querySelector<HTMLButtonElement>('[data-send]')!;
     const text = form.elements.namedItem('text') as HTMLTextAreaElement;
     const name = form.elements.namedItem('name') as HTMLInputElement;
+    const contact = form.elements.namedItem('contact') as HTMLInputElement;
     const d = box.dataset;
     const locale = d.lang === 'en' ? 'en-GB' : 'de-AT';
     const seen = new Set<number>();
@@ -168,6 +176,7 @@ const T = de
           history.replaceState(null, '', location.pathname + location.search);
         }
         if (data.name && !name.value) name.value = data.name;
+        if (data.contact && !contact.value) contact.value = data.contact;
         if (data.room) box!.querySelector('[data-room]')!.textContent = data.room;
         idle = render(data.messages) ? 0 : idle + 1;
       } catch {
@@ -198,7 +207,7 @@ const T = de
         const res = await fetch('/api/hallo', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({ name: name.value, text: text.value, website: (form.elements.namedItem('website') as HTMLInputElement).value }),
+          body: JSON.stringify({ name: name.value, contact: contact.value, text: text.value, website: (form.elements.namedItem('website') as HTMLInputElement).value }),
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok || data.error) throw new Error(data.error || d.error);
@@ -251,7 +260,7 @@ const T = de
   .x { background: transparent; border: 0; color: var(--on-band); cursor: pointer; padding: 4px; border-radius: 6px; display: inline-flex; }
   .x:hover { background: color-mix(in srgb, var(--on-band) 15%, transparent); }
 
-  .log { flex: 1 1 auto; min-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 16px; background: var(--bg); }
+  .log { flex: 1 1 auto; min-height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 16px; background: var(--bg); }
   .empty { color: var(--muted); font-size: 15px; margin: 0; }
   .log :global(.msg) { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 15px; line-height: 1.45; }
   .log :global(.msg p) { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -259,10 +268,11 @@ const T = de
   .log :global(.msg.gast) { align-self: flex-end; background: var(--primary); color: var(--on-primary); border-bottom-right-radius: 3px; }
   .log :global(.msg.team) { align-self: flex-start; background: var(--surface-2); color: var(--ink); border-bottom-left-radius: 3px; }
 
-  form { padding: 12px 16px 14px; border-top: 1px solid var(--line); flex: none; }
+  form { padding: 12px 16px 14px; border-top: 1px solid var(--line); flex: 0 1 auto; min-height: 0; overflow-y: auto; }
   input[type='text'], textarea { width: 100%; background: var(--surface); color: var(--ink); border: 2px solid var(--line-strong); border-radius: 8px; font: inherit; font-size: 15px; padding: 8px 10px; }
   input[type='text']:focus, textarea:focus { border-color: var(--primary); outline: none; }
   input[type='text'] { margin-bottom: 8px; }
+  .c-hint { color: var(--muted); font-size: 13px; line-height: 1.4; margin: 0 0 6px; }
   .compose { display: flex; gap: 8px; align-items: stretch; }
   textarea { resize: none; min-height: 48px; }
   .send { flex: none; }

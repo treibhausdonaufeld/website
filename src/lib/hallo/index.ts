@@ -24,6 +24,19 @@ export interface HalloTransport {
 
 export const MAX_BODY = 1000;
 export const MAX_NAME = 40;
+export const MAX_CONTACT = 100;
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PHONE_RE = /^\+?[\d\s()\/.-]+$/;
+
+/** Telefonnummer oder E-Mail-Adresse (freiwillig). Leer = null, ungültig = Fehler. */
+export function cleanContact(input: unknown): string | null {
+  const c = cleanText(input, MAX_CONTACT).replace(/\s+/g, ' ');
+  if (!c) return null;
+  if (EMAIL_RE.test(c)) return c;
+  if (PHONE_RE.test(c) && (c.match(/\d/g) ?? []).length >= 6) return c;
+  throw new HalloError('invalid', 'Bitte gib eine Telefonnummer oder E-Mail-Adresse an – oder lass das Feld leer.');
+}
 
 export class HalloError extends Error {
   constructor(
@@ -101,11 +114,12 @@ export function messagesFor(db: DB, conversationId: number, afterId = 0, limit =
 export async function sendGuestMessage(
   db: DB,
   transport: HalloTransport,
-  input: { token?: string | null; name?: unknown; text: unknown; ip: string },
+  input: { token?: string | null; name?: unknown; contact?: unknown; text: unknown; ip: string },
 ): Promise<{ token: string; conversation: HalloConversation; message: PublicMessage }> {
   const text = cleanText(input.text, MAX_BODY);
   if (!text) throw new HalloError('invalid', 'Bitte schreib eine Nachricht.');
   const name = cleanText(input.name, MAX_NAME).replace(/\n/g, ' ') || null;
+  const contact = cleanContact(input.contact);
 
   let token = input.token ?? null;
   let conv = findConversation(db, token);
@@ -125,22 +139,35 @@ export async function sendGuestMessage(
     throw new HalloError('unavailable', 'Der Chat ist gerade nicht erreichbar.');
   }
 
+  // Kontakt nur mitschicken, wenn er neu ist oder sich geändert hat
+  let newContact = false;
   if (!conv) {
     token = randomToken();
-    conv = db.insert(halloConversations).values({ tokenHash: hmac(token, 'hallo'), name, roomId }).returning().get();
-  } else if (name && name !== conv.name) {
-    db.update(halloConversations).set({ name }).where(eq(halloConversations.id, conv.id)).run();
-    conv = { ...conv, name };
+    conv = db.insert(halloConversations).values({ tokenHash: hmac(token, 'hallo'), name, contact, roomId }).returning().get();
+    newContact = !!contact;
+  } else {
+    const changes: Partial<HalloConversation> = {};
+    if (name && name !== conv.name) changes.name = name;
+    if (contact && contact !== conv.contact) changes.contact = contact;
+    if (Object.keys(changes).length) {
+      db.update(halloConversations).set(changes).where(eq(halloConversations.id, conv.id)).run();
+      conv = { ...conv, ...changes };
+    }
+    newContact = !!changes.contact;
   }
 
   const who = conv.name ? `Gast „${conv.name}“` : 'Gast';
   const first = !conv.rootEventId || conv.roomId !== roomId;
+  // Beim ersten Beitrag (auch nach Raumwechsel) immer, sonst nur bei neuem Kontakt
+  const showContact = conv.contact && (first || newContact);
+  const contactText = showContact ? `\n📞 Rückmeldung an: ${defuse(conv.contact!)}` : '';
+  const contactHtml = showContact ? `<br>📞 <b>Rückmeldung an:</b> ${esc(defuse(conv.contact!))}` : '';
   let body: string;
   let html: string;
   let extra: Record<string, unknown> = {};
   if (first) {
-    body = `${who} (über die Website): ${defuse(text)}\n\n↪ Antworte im Thread – das sieht die Person auf der Website.`;
-    html = `<b>${esc(who)}</b> <i>(über die Website)</i><br>${esc(defuse(text)).replace(/\n/g, '<br>')}<br><br><sub>↪ Antworte im Thread – das sieht die Person auf der Website.</sub>`;
+    body = `${who} (über die Website): ${defuse(text)}${contactText}\n\n↪ Antworte im Thread – das sieht die Person auf der Website.`;
+    html = `<b>${esc(who)}</b> <i>(über die Website)</i><br>${esc(defuse(text)).replace(/\n/g, '<br>')}${contactHtml}<br><br><sub>↪ Antworte im Thread – das sieht die Person auf der Website.</sub>`;
   } else {
     const last = db
       .select({ eventId: halloMessages.eventId })
@@ -150,8 +177,8 @@ export async function sendGuestMessage(
       .all()
       .filter((m) => m.eventId)
       .at(-1);
-    body = `${who}: ${defuse(text)}`;
-    html = `<b>${esc(who)}:</b> ${esc(defuse(text)).replace(/\n/g, '<br>')}`;
+    body = `${who}: ${defuse(text)}${contactText}`;
+    html = `<b>${esc(who)}:</b> ${esc(defuse(text)).replace(/\n/g, '<br>')}${contactHtml}`;
     extra = {
       'm.relates_to': {
         rel_type: 'm.thread',

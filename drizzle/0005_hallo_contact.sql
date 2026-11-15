@@ -1,0 +1,1 @@
+ALTER TABLE `hallo_conversations` ADD `contact` text;

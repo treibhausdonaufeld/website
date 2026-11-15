@@ -33,6 +33,7 @@ export const GET: APIRoute = ({ cookies, url }) => {
     enabled,
     room: halloRoom(),
     name: conv?.name ?? null,
+    contact: conv?.contact ?? null,
     messages: conv ? messagesFor(getDb(), conv.id, after) : [],
   });
 };
@@ -61,11 +62,12 @@ export const POST: APIRoute = async ({ request, cookies, locals, url }) => {
     const r = await sendGuestMessage(db, halloTransport(), {
       token: cookies.get(COOKIE)?.value,
       name: data.name,
+      contact: data.contact,
       text: data.text,
       ip: locals.ip ?? 'unknown',
     });
     setToken(cookies, r.token);
-    return json({ ok: true, name: r.conversation.name, messages: [r.message] });
+    return json({ ok: true, name: r.conversation.name, contact: r.conversation.contact, messages: [r.message] });
   } catch (err) {
     if (err instanceof HalloError) {
       return json({ error: err.message }, err.code === 'invalid' ? 400 : err.code === 'limit' ? 429 : 503);

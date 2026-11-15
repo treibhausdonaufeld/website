@@ -3,6 +3,7 @@ import type { DB } from '../../src/lib/db';
 import { halloConversations, halloMessages } from '../../src/lib/db/schema';
 import {
   HalloError,
+  cleanContact,
   cleanText,
   cleanupHallo,
   findConversation,
@@ -61,6 +62,37 @@ describe('Website-Chat „Sag hallo“', () => {
     const c = await sendGuestMessage(db, tr.t, { token: 'quatsch', text: 'Hi', ip: ip() });
     expect(c.conversation.id).not.toBe(a.conversation.id);
     expect(tr.sent[2].text).toMatch(/^Gast \(über die Website\): Hi/);
+  });
+
+  it('Kontakt (Telefon/E-Mail) wird beim ersten Beitrag und bei Änderung mitgeschickt', async () => {
+    const a = await sendGuestMessage(db, tr.t, { name: 'Mia', contact: ' +43 660 123 45 67 ', text: 'Ruft mich wer zurück?', ip: ip() });
+    expect(a.conversation.contact).toBe('+43 660 123 45 67');
+    expect(tr.sent[0].text).toContain('📞 Rückmeldung an: +43 660 123 45 67');
+    expect(tr.sent[0].html).toContain('Rückmeldung an:</b> +43 660 123 45 67');
+
+    // gleicher Kontakt: nicht wiederholen
+    await sendGuestMessage(db, tr.t, { token: a.token, contact: '+43 660 123 45 67', text: 'Noch was', ip: ip() });
+    expect(tr.sent[1].text).toBe('Gast „Mia“: Noch was');
+
+    // neuer Kontakt: im Thread nennen
+    const c = await sendGuestMessage(db, tr.t, { token: a.token, contact: 'mia@example.org', text: 'Lieber per Mail', ip: ip() });
+    expect(c.conversation.contact).toBe('mia@example.org');
+    expect(tr.sent[2].text).toBe('Gast „Mia“: Lieber per Mail\n📞 Rückmeldung an: mia@example.org');
+
+    // leer lassen löscht den gespeicherten Kontakt nicht
+    const d = await sendGuestMessage(db, tr.t, { token: a.token, text: 'Danke', ip: ip() });
+    expect(d.conversation.contact).toBe('mia@example.org');
+    expect(tr.sent[3].text).toBe('Gast „Mia“: Danke');
+  });
+
+  it('Kontakt wird geprüft', async () => {
+    expect(cleanContact('')).toBeNull();
+    expect(cleanContact('0660/1234567')).toBe('0660/1234567');
+    expect(cleanContact('a.b@c.at')).toBe('a.b@c.at');
+    expect(() => cleanContact('ruf mich an')).toThrow(HalloError);
+    expect(() => cleanContact('12345')).toThrow(HalloError);
+    await expect(sendGuestMessage(db, tr.t, { contact: 'quatsch', text: 'Hi', ip: ip() })).rejects.toBeInstanceOf(HalloError);
+    expect(tr.sent).toHaveLength(0);
   });
 
   it('HTML wird maskiert, @room entschärft, Steuerzeichen entfernt', async () => {

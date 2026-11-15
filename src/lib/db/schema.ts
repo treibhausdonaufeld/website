@@ -249,6 +249,8 @@ export const halloConversations = sqliteTable(
     /** HMAC des Cookie-Tokens */
     tokenHash: text('token_hash').notNull(),
     name: text('name'),
+    /** Telefon oder E-Mail für eine Rückmeldung außerhalb des Chats (freiwillig) */
+    contact: text('contact'),
     roomId: text('room_id'),
     /** Event-ID der ersten Nachricht im Raum = Thread-Wurzel */
     rootEventId: text('root_event_id'),
