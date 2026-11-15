@@ -21,6 +21,7 @@ try { stamp = formStamp(); } catch { stamp = ''; }
       </div>
     </div>
     <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label></div>
+    <p class="small muted">{de ? <>Wir verwenden deine Adresse nur für den Newsletter. <a href="/datenschutz">Datenschutz</a></> : <>We use your address for the newsletter only. <a href="/datenschutz#english">Privacy</a></>}</p>
     <input type="hidden" name="stamp" value={stamp} />
     <input type="hidden" name="back" value={Astro.url.pathname} />
   </form>
