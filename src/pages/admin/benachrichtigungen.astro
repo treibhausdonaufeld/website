@@ -12,6 +12,10 @@ import {
 import { config } from '../../lib/config';
 import { fmt } from '../../lib/time';
 import { log } from '../../lib/log';
+import { halloStatus, switchHalloRoom } from '../../lib/hallo/runtime';
+import { deleteSetting, setSetting } from '../../lib/settings';
+
+const MATRIX_ROOM_RE = /^[!#][^:\s]{1,255}:[a-z0-9.\-]+(:\d+)?$/i;
 
 const db = getDb();
 const actor = Astro.locals.admin!.name;
@@ -44,6 +48,18 @@ if (Astro.request.method === 'POST') {
       audit(db, actor, 'benachrichtigung-angelegt', null, describe(created));
       msg = `${KIND_LABEL[created.kind]}-Ziel angelegt. Mit „Test senden“ kannst du prüfen, ob es ankommt.`;
       form = { kind: form.kind, target: '', label: '', events: ADMIN_EVENT_KEYS.filter((e) => ADMIN_EVENTS[e].default) };
+    }
+  } else if (action === 'chat-raum') {
+    const room = String(f.get('room') ?? '').trim();
+    if (room && !MATRIX_ROOM_RE.test(room)) error = 'Bitte eine Raum-ID (!abc:server) oder einen Alias (#name:server) angeben.';
+    else {
+      if (room && room !== config.halloChat.room) setSetting(db, 'hallo_chat_room', room, actor);
+      else deleteSetting(db, 'hallo_chat_room');
+      audit(db, actor, 'website-chat-raum-geaendert', null, room || config.halloChat.room);
+      await switchHalloRoom().catch((err) => log.warn('Website-Chat-Raum konnte nicht gewechselt werden', { err }));
+      msg = halloStatus().connected
+        ? 'Website-Chat-Raum gespeichert und verbunden.'
+        : 'Website-Chat-Raum gespeichert. Der Bot ist dort noch nicht Mitglied – bitte einladen (er nimmt die Einladung an).';
     }
   } else if (t && action === 'ereignisse') {
     const events = f.getAll('events').map(String);
@@ -83,6 +99,7 @@ if (Astro.request.method === 'POST') {
 }
 
 const targets = listTargets(db);
+const chat = halloStatus();
 const status = Object.fromEntries(NOTIFY_KINDS.map((k) => [k, kindStatus(k)])) as Record<NotifyKind, ReturnType<typeof kindStatus>>;
 ---
 <Admin title="Benachrichtigungen">
@@ -156,6 +173,22 @@ const status = Object.fromEntries(NOTIFY_KINDS.map((k) => [k, kindStatus(k)])) a
     </fieldset>
     <p class="small muted">Matrix: Der Bot tritt dem Raum bei. Ist der Raum nicht öffentlich, lade den Bot ein – er nimmt Einladungen in eingestellte Räume an. Rocket.Chat: Der Bot-Benutzer muss Mitglied im Channel sein.</p>
     <button class="btn" type="submit">Ziel anlegen</button>
+  </form>
+
+  <h2 style="margin-top:40px" id="website-chat">Website-Chat „Sag Hallo“</h2>
+  <p class="muted">In diesen Matrix-Raum postet der Bot die Nachrichten aus der Chat-Blase auf der Startseite. Antworten im Thread erscheinen beim Gast auf der Website.</p>
+  <p>
+    <span class={`badge ${chat.connected ? 'bestaetigt' : 'vorlaeufig'}`}>{chat.connected ? 'verbunden' : chat.configured ? 'nicht verbunden' : 'nicht eingerichtet'}</span>
+    {!chat.configured && <span class="small muted"> – Chat-Bot fehlt (MATRIX_HALLO_TOKEN oder MATRIX_BOT_TOKEN) oder HALLO_CHAT ist aus</span>}
+  </p>
+  <form method="post" class="card narrow">
+    <input type="hidden" name="aktion" value="chat-raum" />
+    <div class="field">
+      <label for="chat-room">Matrix-Raum</label>
+      <input id="chat-room" type="text" name="room" value={chat.room} placeholder={config.halloChat.room} autocomplete="off" />
+    </div>
+    <p class="small muted">Alias (#name:server) oder Raum-ID (!abc:server). Leer = Standard {config.halloChat.room}. Ist der Raum nicht öffentlich, lade den Chat-Bot ein. Laufende Gespräche bekommen beim nächsten Schreiben einen neuen Thread im neuen Raum.</p>
+    <button class="btn" type="submit">Speichern</button>
   </form>
 </Admin>
 <style>

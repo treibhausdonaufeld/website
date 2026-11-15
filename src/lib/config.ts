@@ -37,11 +37,14 @@ export const config = {
   trustProxy: bool('TRUST_PROXY', true),
 
   contactEmail: env('CONTACT_EMAIL', 'hallo@treibhausdonaufeld.at'),
+  /** Öffentlicher Matrix-Raum zum Hallo-Sagen (Links auf der Website, Mail-Fußzeile). */
   matrixHalloRoom: env('MATRIX_HALLO_ROOM', '#hallo:treibhausdonaufeld.at'),
 
-  /** Chat-Box „Sag hallo“ auf der Website (braucht den Matrix-Bot, der in MATRIX_HALLO_ROOM postet). */
+  /** Chat-Box „Sag hallo“ auf der Website (braucht den Matrix-Bot, der in den Chat-Raum postet). */
   halloChat: {
     enabled: bool('HALLO_CHAT', true),
+    /** Matrix-Raum für Website-Chat-Nachrichten. Standard; im Admin unter „Benachrichtigungen“ änderbar. */
+    room: env('MATRIX_HALLO_CHAT_ROOM', '#website-chat:treibhausdonaufeld.at'),
     /** Gespräche werden so viele Tage nach der letzten Nachricht gelöscht. */
     retentionDays: num('HALLO_CHAT_RETENTION_DAYS', 30),
   },

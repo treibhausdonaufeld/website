@@ -239,7 +239,7 @@ export type CalendarSubscription = typeof calendarSubscriptions.$inferSelect;
 export type ExternalEvent = typeof externalEvents.$inferSelect;
 
 /**
- * Chat „Sag hallo“ auf der Website: Gäste schreiben ohne Konto, der Matrix-Bot postet in #hallo
+ * Chat „Sag hallo“ auf der Website: Gäste schreiben ohne Konto, der Matrix-Bot postet in den Website-Chat-Raum
  * (erste Nachricht als neuer Beitrag, weitere im Thread). Antworten im Thread gehen zurück an den Gast.
  */
 export const halloConversations = sqliteTable(
@@ -277,3 +277,11 @@ export const halloMessages = sqliteTable(
 
 export type HalloConversation = typeof halloConversations.$inferSelect;
 export type HalloMessage = typeof halloMessages.$inferSelect;
+
+/** Einstellungen, die im Admin-Bereich geändert werden (Schlüssel → Wert). */
+export const settings = sqliteTable('settings', {
+  key: text('key').primaryKey(),
+  value: text('value').notNull(),
+  updatedBy: text('updated_by'),
+  updatedAt: ts('updated_at').notNull().default(now),
+});

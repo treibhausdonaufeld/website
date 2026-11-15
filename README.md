@@ -96,7 +96,8 @@ Alle Werte über Umgebungsvariablen, Vorlage in [`.env.example`](.env.example), 
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | Mailversand über das SMTP des Hauses |
 | `MATRIX_HOMESERVER`, `MATRIX_BOT_TOKEN` | Bot-Konto `@raeume:treibhausdonaufeld.at` |
 | `MATRIX_HALLO_TOKEN` | Eigenes Konto für den Website-Chat (z. B. `@website:treibhausdonaufeld.at`); leer = Chat über `MATRIX_BOT_TOKEN` |
-| `MATRIX_HALLO_ROOM`, `HALLO_CHAT`, `HALLO_CHAT_RETENTION_DAYS` | Raum für den Website-Chat „Sag hallo“ (Standard `#hallo:treibhausdonaufeld.at`), Chat an/aus (Standard an), Löschfrist in Tagen (Standard 30) |
+| `MATRIX_HALLO_ROOM` | Öffentlicher Matrix-Raum zum Hallo-Sagen, verlinkt auf der Website und in Mails (Standard `#hallo:treibhausdonaufeld.at`) |
+| `MATRIX_HALLO_CHAT_ROOM`, `HALLO_CHAT`, `HALLO_CHAT_RETENTION_DAYS` | Standard-Raum für Nachrichten aus dem Website-Chat (Standard `#website-chat:treibhausdonaufeld.at`, im Admin unter „Benachrichtigungen“ änderbar), Chat an/aus (Standard an), Löschfrist in Tagen (Standard 30) |
 | `ROCKETCHAT_URL`, `ROCKETCHAT_USER_ID`, `ROCKETCHAT_TOKEN` | Rocket.Chat-Bot für Meldungen an die Raum-AG (Channel wird im Admin eingestellt) |
 | `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`, `OIDC_ADMIN_GROUP` | Login der Raum-AG über Authentik |
 | `DEV_ADMIN_LOGIN` | Admin-Login ohne Authentik – nur lokal! In Produktion `false` |
@@ -145,12 +146,12 @@ Inhaltsänderungen brauchen einen neuen Build (ein paar Minuten bis zum neuen Im
 
 ## Chat „Sag hallo“ auf der Website
 
-Gäste können ohne Matrix-Konto direkt auf der Website schreiben (Abschnitt „Sag hallo“ auf Start- und Kontaktseite). Der Matrix-Bot – ein eigenes Konto über `MATRIX_HALLO_TOKEN` (empfohlen, z. B. `@website:treibhausdonaufeld.at`), sonst der Buchungs-Bot über `MATRIX_BOT_TOKEN` – postet die erste Nachricht eines Gesprächs als neuen Beitrag in `MATRIX_HALLO_ROOM` (Standard `#hallo:treibhausdonaufeld.at`), jede weitere im **Thread** darunter. Wer im Thread antwortet (oder direkt auf eine Gast-Nachricht antwortet), dessen Antwort erscheint beim Gast auf der Website, mit Anzeigenamen. Auf dem Homeserver entstehen keine Gastkonten.
+Gäste können ohne Matrix-Konto direkt auf der Website schreiben (Chat-Blase „Sag Hallo“ auf der Startseite). Der Matrix-Bot – ein eigenes Konto über `MATRIX_HALLO_TOKEN` (empfohlen, z. B. `@website:treibhausdonaufeld.at`), sonst der Buchungs-Bot über `MATRIX_BOT_TOKEN` – postet die erste Nachricht eines Gesprächs als neuen Beitrag in den Website-Chat-Raum (Standard `#website-chat:treibhausdonaufeld.at`, im Admin unter **Benachrichtigungen → Website-Chat** änderbar), jede weitere im **Thread** darunter. Wer im Thread antwortet (oder direkt auf eine Gast-Nachricht antwortet), dessen Antwort erscheint beim Gast auf der Website, mit Anzeigenamen. Auf dem Homeserver entstehen keine Gastkonten.
 
 Einrichten:
-1. Das Chat-Konto (`MATRIX_HALLO_TOKEN`) in `#hallo` einladen (bei öffentlichen Räumen tritt er selbst bei). Er braucht Schreibrecht, keine Admin-Rechte.
-2. `#hallo` darf **nicht verschlüsselt** sein – der Bot kann keine Ende-zu-Ende-Verschlüsselung.
-3. Fertig: Die Chat-Box erscheint, sobald der Bot verbunden und im Raum ist; sonst bleibt der Matrix-Knopf wie bisher.
+1. Das Chat-Konto (`MATRIX_HALLO_TOKEN`) in `#website-chat` einladen (bei öffentlichen Räumen tritt er selbst bei). Er braucht Schreibrecht, keine Admin-Rechte.
+2. `#website-chat` darf **nicht verschlüsselt** sein – der Bot kann keine Ende-zu-Ende-Verschlüsselung.
+3. Fertig: Die Chat-Blase erscheint, sobald der Bot verbunden und im Raum ist. Wird der Raum im Admin geändert, wechselt der Bot ohne Neustart; Antworten in Threads im alten Raum kommen bis zum nächsten Neustart noch an.
 
 Schutz und Moderation: Rate-Limits pro IP (15 Nachrichten / 10 Min., 60 / Tag, 3 neue Gespräche / Stunde), pro Gespräch (30 / Stunde) und für den ganzen Raum (200 / Stunde), ein unsichtbares Honigtopf-Feld gegen Bots, HTML wird maskiert, `@room` entschärft. Unerwünschte Nachrichten im Raum einfach löschen (redact). Abschalten mit `HALLO_CHAT=false`. Gespräche werden `HALLO_CHAT_RETENTION_DAYS` (Standard 30) Tage nach der letzten Nachricht gelöscht.
 

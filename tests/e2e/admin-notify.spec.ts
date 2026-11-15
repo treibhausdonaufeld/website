@@ -72,3 +72,30 @@ test.describe('E-Mail-Adresse geschützt', () => {
     await ctx.close();
   });
 });
+
+test('Raum-AG stellt den Matrix-Raum für den Website-Chat ein', async ({ page, request }) => {
+  await page.goto('/admin/login');
+  await page.getByRole('button', { name: 'Anmelden' }).click();
+  await page.goto('/admin/benachrichtigungen');
+
+  const field = page.getByLabel('Matrix-Raum');
+  await expect(field).toHaveValue('#website-chat:treibhausdonaufeld.at');
+  expect((await (await request.get('/api/hallo')).json()).room).toBe('#website-chat:treibhausdonaufeld.at');
+
+  // ungültig
+  await field.fill('website-chat');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).last().click();
+  await expect(page.getByText('Bitte eine Raum-ID (!abc:server) oder einen Alias (#name:server) angeben.')).toBeVisible();
+
+  // gültig: gespeichert und von der Chat-API gemeldet
+  await page.getByLabel('Matrix-Raum').fill('#anderer-chat:treibhausdonaufeld.at');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).last().click();
+  await expect(page.getByText(/Website-Chat-Raum gespeichert/)).toBeVisible();
+  await expect(page.getByLabel('Matrix-Raum')).toHaveValue('#anderer-chat:treibhausdonaufeld.at');
+  expect((await (await request.get('/api/hallo')).json()).room).toBe('#anderer-chat:treibhausdonaufeld.at');
+
+  // leer = zurück zum Standard
+  await page.getByLabel('Matrix-Raum').fill('');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).last().click();
+  await expect(page.getByLabel('Matrix-Raum')).toHaveValue('#website-chat:treibhausdonaufeld.at');
+});

@@ -2,7 +2,7 @@ import type { APIRoute, AstroCookies } from 'astro';
 import { config } from '../../lib/config';
 import { getDb } from '../../lib/db';
 import { HalloError, MAX_BODY, findConversation, messagesFor, sendGuestMessage } from '../../lib/hallo';
-import { halloAvailable, halloTransport } from '../../lib/hallo/runtime';
+import { halloAvailable, halloRoom, halloTransport } from '../../lib/hallo/runtime';
 import { log } from '../../lib/log';
 
 export const prerender = false;
@@ -31,7 +31,7 @@ export const GET: APIRoute = ({ cookies, url }) => {
   const after = Math.max(0, Number(url.searchParams.get('nach')) || 0);
   return json({
     enabled,
-    room: config.matrixHalloRoom,
+    room: halloRoom(),
     name: conv?.name ?? null,
     messages: conv ? messagesFor(getDb(), conv.id, after) : [],
   });

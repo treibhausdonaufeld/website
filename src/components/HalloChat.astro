@@ -1,7 +1,8 @@
 ---
 // Schwebende Chat-Blase (unten rechts) für den Chat ohne Konto.
 // Wird nur eingeblendet, wenn der Matrix-Bot verbunden ist (oder schon ein Gespräch existiert).
-import { MATRIX_ROOM, MATRIX_URL } from '../lib/i18n';
+import { MATRIX_URL } from '../lib/i18n';
+import { config } from '../lib/config';
 interface Props { lang?: 'de' | 'en' }
 const { lang = 'de' } = Astro.props;
 const de = lang === 'de';
@@ -18,7 +19,8 @@ const T = de
       placeholder: 'Nachricht schreiben …',
       send: 'Senden',
       sending: 'Wird gesendet …',
-      note: `Deine Nachricht erscheint im offenen Matrix-Raum ${MATRIX_ROOM} – alle dort können sie lesen. Antworten siehst du hier in diesem Browser (30 Tage lang). Bitte keine sensiblen Daten.`,
+      noteA: 'Deine Nachricht erscheint im Matrix-Raum ',
+      noteB: ' – alle dort können sie lesen. Antworten siehst du hier in diesem Browser (30 Tage lang). Bitte keine sensiblen Daten.',
       you: 'Du',
       team: 'Treibhaus',
       error: 'Das hat nicht geklappt. Bitte versuch es gleich noch einmal oder schreib uns per Mail.',
@@ -36,7 +38,8 @@ const T = de
       placeholder: 'Write a message …',
       send: 'Send',
       sending: 'Sending …',
-      note: `Your message appears in the open Matrix room ${MATRIX_ROOM} – everyone there can read it. You will see replies here in this browser (for 30 days). Please do not share sensitive data.`,
+      noteA: 'Your message appears in the Matrix room ',
+      noteB: ' – everyone there can read it. You will see replies here in this browser (for 30 days). Please do not share sensitive data.',
       you: 'You',
       team: 'Treibhaus',
       error: 'That did not work. Please try again in a moment or write to us by email.',
@@ -68,7 +71,7 @@ const T = de
         <button class="btn send" type="submit" data-send>{T.send}</button>
       </div>
       <p class="err" role="alert" data-err></p>
-      <p class="note">{T.note}</p>
+      <p class="note">{T.noteA}<span data-room>{config.halloChat.room}</span>{T.noteB}</p>
       <p class="note"><a href={MATRIX_URL}>{T.orMatrix}</a></p>
     </form>
   </div>
@@ -165,6 +168,7 @@ const T = de
           history.replaceState(null, '', location.pathname + location.search);
         }
         if (data.name && !name.value) name.value = data.name;
+        if (data.room) box!.querySelector('[data-room]')!.textContent = data.room;
         idle = render(data.messages) ? 0 : idle + 1;
       } catch {
         idle++;

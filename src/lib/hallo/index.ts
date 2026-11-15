@@ -2,7 +2,7 @@
  * „Sag hallo“-Chat auf der Website.
  *
  * Gäste schreiben ohne Konto. Der Matrix-Bot postet die erste Nachricht eines Gesprächs als neuen
- * Beitrag in #hallo, jede weitere im Thread darunter. Antworten im Thread (oder direkte Antworten auf
+ * Beitrag im Website-Chat-Raum (Standard #website-chat), jede weitere im Thread darunter. Antworten im Thread (oder direkte Antworten auf
  * eine dieser Nachrichten) werden dem Gast auf der Website angezeigt. Ein Gespräch hängt an einem
  * zufälligen Token im Cookie; gespeichert wird nur dessen HMAC.
  */
@@ -17,7 +17,7 @@ import type { MatrixEvent } from '../notify/matrix';
 
 /** Was der Chat vom Matrix-Bot braucht (im Test ersetzbar). */
 export interface HalloTransport {
-  /** Raum-ID von #hallo (Bot ist Mitglied). */
+  /** Raum-ID des Website-Chat-Raums (Bot ist Mitglied). */
   roomId(): Promise<string>;
   send(roomId: string, text: string, html: string, extra: Record<string, unknown>): Promise<string>;
 }
@@ -183,7 +183,7 @@ export async function sendGuestMessage(
 }
 
 /**
- * Nachricht aus #hallo: gehört sie zu einem Gespräch (Thread-Antwort oder Antwort auf eine
+ * Nachricht aus dem Website-Chat-Raum: gehört sie zu einem Gespräch (Thread-Antwort oder Antwort auf eine
  * Gesprächsnachricht), wird sie dem Gast angezeigt. Gibt die Gesprächs-ID zurück.
  */
 export async function handleRoomMessage(
