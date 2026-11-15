@@ -55,10 +55,29 @@ export interface PublicMessage {
   at: number;
 }
 
+/**
+ * Nur den Vornamen zeigen: „Anna Muster (Raum-AG)“ → „Anna“, „@anna.muster:server“ → „Anna“.
+ * Leer → null (die Website zeigt dann „Treibhaus“).
+ */
+export function firstName(name: string | null | undefined): string | null {
+  let n = String(name ?? '')
+    .replace(/[([{].*?[)\]}]/g, ' ')
+    .replace(/^@/, '')
+    .replace(/:\S*$/, '')
+    .replace(/[^\p{L}\p{M}\s'._-]/gu, ' ')
+    .trim();
+  n = n.split(/\s+/)[0] ?? '';
+  // Matrix-ID-artig (anna.muster, anna_muster): erster Teil
+  if (!/[A-ZÄÖÜ]/.test(n.slice(1)) && /[._]/.test(n)) n = n.split(/[._]/)[0];
+  n = n.replace(/[^\p{L}\p{M}'-]/gu, '').slice(0, 30);
+  if (!n) return null;
+  return n.charAt(0).toLocaleUpperCase('de') + n.slice(1);
+}
+
 const toPublic = (m: HalloMessage): PublicMessage => ({
   id: m.id,
   from: m.direction,
-  author: m.direction === 'team' ? m.author : null,
+  author: m.direction === 'team' ? firstName(m.author) : null,
   text: m.body,
   at: m.createdAt.getTime(),
 });
@@ -245,10 +264,11 @@ export async function handleRoomMessage(
   if (msgtype && !['m.text', 'm.notice', 'm.emote'].includes(msgtype)) body = '(Datei oder Bild – bitte im Matrix-Raum ansehen)';
   body = cleanText(stripReplyFallback(body), 4000);
   if (!body) return null;
-  const author = await displayName(ev.sender);
+  // Nur der Vorname wird gespeichert und auf der Website gezeigt
+  const author = firstName(await displayName(ev.sender));
   const at = ev.origin_server_ts ? new Date(ev.origin_server_ts) : new Date();
   db.insert(halloMessages)
-    .values({ conversationId: conv.id, direction: 'team', author, body: msgtype === 'm.emote' ? `* ${author} ${body}` : body, eventId: ev.event_id, createdAt: at })
+    .values({ conversationId: conv.id, direction: 'team', author, body: msgtype === 'm.emote' ? `* ${author ?? 'Treibhaus'} ${body}` : body, eventId: ev.event_id, createdAt: at })
     .onConflictDoNothing()
     .run();
   db.update(halloConversations).set({ lastActivityAt: new Date() }).where(eq(halloConversations.id, conv.id)).run();

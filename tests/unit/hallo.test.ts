@@ -4,6 +4,7 @@ import { halloConversations, halloMessages } from '../../src/lib/db/schema';
 import {
   HalloError,
   cleanContact,
+  firstName,
   cleanText,
   cleanupHallo,
   findConversation,
@@ -85,6 +86,18 @@ describe('Website-Chat „Sag hallo“', () => {
     expect(tr.sent[3].text).toBe('Gast „Mia“: Danke');
   });
 
+  it('auf der Website steht nur der Vorname', () => {
+    expect(firstName('Anna Muster')).toBe('Anna');
+    expect(firstName('Anna Muster (Raum-AG)')).toBe('Anna');
+    expect(firstName('[Raum-AG] Jörg Huber')).toBe('Jörg');
+    expect(firstName('@anna.muster:treibhausdonaufeld.at')).toBe('Anna');
+    expect(firstName('anna_muster')).toBe('Anna');
+    expect(firstName('Marie-Luise Berger')).toBe('Marie-Luise');
+    expect(firstName('🌱 Lena 🌱')).toBe('Lena');
+    expect(firstName('')).toBeNull();
+    expect(firstName(null)).toBeNull();
+  });
+
   it('Kontakt wird geprüft', async () => {
     expect(cleanContact('')).toBeNull();
     expect(cleanContact('0660/1234567')).toBe('0660/1234567');
@@ -126,8 +139,8 @@ describe('Website-Chat „Sag hallo“', () => {
     const msgs = messagesFor(db, a.conversation.id);
     expect(msgs.map((m) => `${m.from}:${m.author ?? ''}:${m.text}`)).toEqual([
       'gast::Hallo',
-      'team:Anna (Raum-AG):Samstag 13:30!',
-      'team:@bo:th:Willkommen!',
+      'team:Anna:Samstag 13:30!',
+      'team:Bo:Willkommen!',
     ]);
     expect(messagesFor(db, a.conversation.id, msgs[1].id).map((m) => m.text)).toEqual(['Willkommen!']);
     expect(messagesFor(db, other.conversation.id).map((m) => m.text)).toEqual(['Anderes Gespräch']);
