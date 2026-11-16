@@ -179,7 +179,7 @@ const status = Object.fromEntries(NOTIFY_KINDS.map((k) => [k, kindStatus(k)])) a
   <p class="muted">In diesen Matrix-Raum postet der Bot die Nachrichten aus der Chat-Blase auf der Startseite. Antworten im Thread erscheinen beim Gast auf der Website.</p>
   <p>
     <span class={`badge ${chat.connected ? 'bestaetigt' : 'vorlaeufig'}`}>{chat.connected ? 'verbunden' : chat.configured ? 'nicht verbunden' : 'nicht eingerichtet'}</span>
-    {!chat.configured && <span class="small muted"> – Chat-Bot fehlt (MATRIX_HALLO_TOKEN oder MATRIX_BOT_TOKEN) oder HALLO_CHAT ist aus</span>}
+    {!chat.configured && <span class="small muted"> – Matrix-Bot fehlt (MATRIX_BOT_TOKEN) oder HALLO_CHAT ist aus</span>}
   </p>
   <form method="post" class="card narrow">
     <input type="hidden" name="aktion" value="chat-raum" />

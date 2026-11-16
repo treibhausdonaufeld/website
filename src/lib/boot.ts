@@ -59,7 +59,7 @@ async function boot() {
   } else {
     log.info('Matrix-Bot nicht konfiguriert (MATRIX_HOMESERVER/MATRIX_BOT_TOKEN)');
   }
-  // Website-Chat: eigenes Konto (MATRIX_HALLO_TOKEN) oder derselbe Bot
+  // Website-Chat: derselbe Bot beobachtet den Chat-Raum (Sync läuft bereits oben).
   await startHallo();
   startJobs(db, notifier);
   log.info('Treibhaus-Dienste gestartet', { publicUrl: config.publicUrl });

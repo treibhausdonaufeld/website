@@ -2,11 +2,11 @@
 import { config } from '../config';
 import { getDb } from '../db';
 import { log } from '../log';
-import { getHalloBot, halloBotIsSeparate } from '../notify/matrix';
+import { getMatrixBot } from '../notify/matrix';
 import { getSetting } from '../settings';
 import { handleRoomMessage, type HalloTransport } from './index';
 
-const g = globalThis as unknown as { __halloRoomId?: string | null; __halloRoom?: string; __halloStarted?: boolean };
+const g = globalThis as unknown as { __halloRoomId?: string | null; __halloRoom?: string };
 
 /** Matrix-Raum für Website-Chat-Nachrichten: Einstellung im Admin, sonst MATRIX_HALLO_CHAT_ROOM. */
 export function halloRoom(): string {
@@ -15,7 +15,7 @@ export function halloRoom(): string {
 
 /** Raum beobachten, in dem der Bot gerade posten soll. Fehler (z. B. Bot noch nicht eingeladen) werden geloggt. */
 async function watchCurrentRoom(): Promise<void> {
-  const bot = getHalloBot();
+  const bot = getMatrixBot();
   if (!bot) return;
   const room = halloRoom();
   const db = getDb();
@@ -33,15 +33,9 @@ async function watchCurrentRoom(): Promise<void> {
   }
 }
 
-/** Beim Start: Chat-Raum beobachten. */
+/** Beim Start: Chat-Raum beobachten. Der Bot-Sync läuft bereits (siehe boot.ts). */
 export async function startHallo(): Promise<void> {
-  const bot = getHalloBot();
-  if (!config.halloChat.enabled || !bot) return;
-  // Eigenes Chat-Konto: Sync starten. Es nimmt keine Codes an (das macht der Buchungs-Bot).
-  if (halloBotIsSeparate() && !g.__halloStarted) {
-    g.__halloStarted = true;
-    await bot.start(async () => null);
-  }
+  if (!config.halloChat.enabled || !getMatrixBot()) return;
   await watchCurrentRoom();
 }
 
@@ -50,7 +44,7 @@ export async function startHallo(): Promise<void> {
  * Server neu startet, damit Antworten in laufenden Threads noch ankommen. Neue Nachrichten gehen in den neuen Raum.
  */
 export async function switchHalloRoom(): Promise<void> {
-  if (!config.halloChat.enabled || !getHalloBot()) return;
+  if (!config.halloChat.enabled || !getMatrixBot()) return;
   if (g.__halloRoom === halloRoom() && g.__halloRoomId) return;
   await watchCurrentRoom();
 }
@@ -61,25 +55,25 @@ export function halloStatus(): { room: string; watching: string | null; connecte
     room: halloRoom(),
     watching: g.__halloRoom ?? null,
     connected: halloAvailable(),
-    configured: !!(config.halloChat.enabled && getHalloBot()),
+    configured: !!(config.halloChat.enabled && getMatrixBot()),
   };
 }
 
 /** Ist die Chat-Box nutzbar? */
 export function halloAvailable(): boolean {
-  const bot = getHalloBot();
+  const bot = getMatrixBot();
   return !!(config.halloChat.enabled && bot && bot.connected && g.__halloRoomId && bot.isJoined(g.__halloRoomId));
 }
 
 export function halloTransport(): HalloTransport {
   return {
     async roomId() {
-      const bot = getHalloBot();
+      const bot = getMatrixBot();
       if (!bot || !g.__halloRoomId) throw new Error('Website-Chat nicht verbunden');
       return bot.joinedRoom(g.__halloRoomId);
     },
     async send(roomId, text, html, extra) {
-      const bot = getHalloBot();
+      const bot = getMatrixBot();
       if (!bot) throw new Error('Matrix-Bot nicht konfiguriert');
       return bot.send(roomId, text, html, false, extra);
     },

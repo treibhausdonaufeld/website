@@ -61,13 +61,9 @@ export const config = {
   matrix: {
     homeserver: env('MATRIX_HOMESERVER').replace(/\/$/, ''),
     token: env('MATRIX_BOT_TOKEN'),
+    /** Matrix-ID des Bot-Kontos, z. B. für den Hinweis an Buchende, von wem die Einladung kommt. */
+    botUserId: env('MATRIX_BOT_USER_ID', '@website-bot:treibhausdonaufeld.at'),
     stateFile: env('MATRIX_STATE_FILE', './data/matrix-bot.json'),
-    /**
-     * Eigenes Konto für den Website-Chat (z. B. @website:treibhausdonaufeld.at), getrennt vom Bot für
-     * Codes und Meldungen. Leer = der Chat nutzt MATRIX_BOT_TOKEN.
-     */
-    halloToken: env('MATRIX_HALLO_TOKEN'),
-    halloStateFile: env('MATRIX_HALLO_STATE_FILE', ''),
   },
 
   /** Rocket.Chat: Bot-Benutzer mit persönlichem Zugangstoken. Der Channel wird im Admin eingestellt. */
