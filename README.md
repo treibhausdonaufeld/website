@@ -51,7 +51,7 @@ npm run build && npm run test:e2e
 
 ### Container
 
-Das Image wird bei jedem Push auf `main` und bei Tags `v*` von GitHub Actions gebaut und nach `ghcr.io/treibhausdonaufeld/homepage` geschoben ([Workflow](.github/workflows/container.yml)). Vorher laufen Typprüfung, Unit- und Browser-Tests. Pull Requests werden nur gebaut, nicht veröffentlicht.
+Das Image wird bei jedem Push auf `main` und bei Tags `v*` von GitHub Actions gebaut und nach `ghcr.io/treibhausdonaufeld/website` geschoben ([Workflow](.github/workflows/container.yml)). Vorher laufen Typprüfung, Unit- und Browser-Tests. Pull Requests werden nur gebaut, nicht veröffentlicht.
 
 | Tag | Bedeutung |
 | --- | --- |

@@ -7,7 +7,7 @@
 services:
   web:
     build: .
-    image: ghcr.io/treibhausdonaufeld/homepage:latest
+    image: ghcr.io/treibhausdonaufeld/website:latest
     restart: unless-stopped
     ports:
       - "4321:4321"
