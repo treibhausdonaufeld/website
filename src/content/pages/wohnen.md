@@ -3,7 +3,7 @@ title: Wohnen im Treibhaus
 description: Im Moment sind alle Wohnungen vergeben.
 ---
 
-Im Treibhaus wohnen rund 65 Erwachsene und 30 Kinder in 50 Wohnungen [TODO: Zahlen prüfen]. **Im Moment sind alle Wohnungen vergeben.**
+Im Treibhaus wohnen rund 80 Erwachsene und 40 Kinder in 50 Wohnungen. **Im Moment sind alle Wohnungen vergeben.**
 
 ## Du interessierst dich trotzdem?
 
