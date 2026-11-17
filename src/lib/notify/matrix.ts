@@ -121,8 +121,30 @@ export class MatrixBot {
     return res.room_id;
   }
 
+  /** Ist das Bot-Konto laut Raumzustand Mitglied? (null, solange das Konto nicht bekannt ist.) */
+  private async isMember(roomId: string): Promise<boolean> {
+    if (!this.userId) return false;
+    try {
+      const res = await this.req<{ membership?: string }>(
+        'GET',
+        `/rooms/${encodeURIComponent(roomId)}/state/m.room.member/${encodeURIComponent(this.userId)}`,
+      );
+      return res.membership === 'join';
+    } catch {
+      // Zustand nicht lesbar (z. B. 403) – dann bleibt nur der Beitrittsversuch.
+      return false;
+    }
+  }
+
   private async ensureJoined(roomId: string) {
     if (this.joined.has(roomId)) return;
+    // Schon Mitglied? Dann ist kein Beitritt nötig. Manche Homeserver beantworten POST /join
+    // für einen Raum, in dem das Konto bereits drin ist, mit 403 „Not allowed to join this room".
+    // Ohne diese Prüfung gilt der Bot danach als nicht beigetreten – der Website-Chat bleibt aus.
+    if (await this.isMember(roomId)) {
+      this.joined.add(roomId);
+      return;
+    }
     await this.req('POST', `/join/${encodeURIComponent(roomId)}`, {});
     this.joined.add(roomId);
   }
@@ -179,6 +201,9 @@ export class MatrixBot {
   }
 
   private async handleSync(res: any) {
+    // Räume, in denen der Bot laut Sync Mitglied ist, als beigetreten merken. Das heilt einen
+    // beim Start gescheiterten Beitritt (z. B. Einladung erst später angenommen) ohne Neustart.
+    for (const roomId of Object.keys(res.rooms?.join ?? {})) this.joined.add(roomId);
     // Einladungen nur in den Raum-AG-Raum und beobachtete Räume annehmen
     for (const roomId of Object.keys(res.rooms?.invite ?? {})) {
       if (this.notifyRooms.has(roomId) || this.listeners.has(roomId)) {

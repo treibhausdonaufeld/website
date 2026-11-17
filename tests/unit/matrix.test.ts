@@ -20,12 +20,16 @@ beforeAll(async () => {
         res.end(JSON.stringify(data));
       };
       const u = decodeURIComponent(req.url!);
+      if (u.includes('/account/whoami')) return json(200, { user_id: '@website:example.org' });
       if (u.includes('/profile/@gibtsnicht:example.org')) return json(404, { errcode: 'M_NOT_FOUND', error: 'Profile not found' });
       if (u.includes('/profile/')) return json(200, { displayname: 'Amira' });
       if (u.endsWith('/createRoom')) return json(200, { room_id: '!dm:example.org' });
       if (u.includes('/send/m.room.message/')) return json(200, { event_id: '$1' });
       if (u.includes('/state/m.room.member/')) return json(200, { membership: 'join' });
       if (u.includes('/directory/room/#raum-ag:example.org')) return json(200, { room_id: '!raumag:example.org' });
+      if (u.includes('/directory/room/#schon:example.org')) return json(200, { room_id: '!schon:example.org' });
+      // Wie ein Synapse, der einen Beitritt in einen Raum, in dem man schon drin ist, ablehnt
+      if (u.includes('/join/!schon:example.org')) return json(403, { errcode: 'M_FORBIDDEN', error: 'Not allowed to join this room' });
       if (u.includes('/join/')) return json(200, { room_id: u.split('/join/')[1] });
       return json(404, { errcode: 'M_UNRECOGNIZED' });
     });
@@ -65,5 +69,24 @@ describe('Matrix-Bot', () => {
     const send = calls.filter((c) => c.url.includes('/send/')).at(-1)!;
     expect(decodeURIComponent(send.url)).toContain('/rooms/!raumag:example.org/send/');
     expect(send.body.msgtype).toBe('m.notice');
+  });
+
+  it('gilt als beigetreten, wenn der Homeserver den Beitritt in einen bestehenden Raum mit 403 ablehnt', async () => {
+    const bot = new MatrixBot(base, 'tok', path.join(os.tmpdir(), `mb-${Date.now()}-4.json`));
+    await bot.start(async () => null); // setzt nur die eigene Matrix-ID (whoami)
+    bot.stop();
+    const roomId = await bot.watchRoom('#schon:example.org', () => {});
+    expect(roomId).toBe('!schon:example.org');
+    expect(bot.isJoined(roomId)).toBe(true);
+    expect(calls.filter((c) => decodeURIComponent(c.url).includes('/join/!schon:example.org'))).toHaveLength(0);
+  });
+
+  it('merkt Räume aus dem Sync als beigetreten (Selbstheilung ohne Neustart)', async () => {
+    const bot = new MatrixBot(base, 'tok', path.join(os.tmpdir(), `mb-${Date.now()}-5.json`));
+    expect(bot.isJoined('!spaet:example.org')).toBe(false);
+    await (bot as unknown as { handleSync(res: unknown): Promise<void> }).handleSync({
+      rooms: { join: { '!spaet:example.org': {} } },
+    });
+    expect(bot.isJoined('!spaet:example.org')).toBe(true);
   });
 });
