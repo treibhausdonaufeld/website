@@ -54,6 +54,14 @@ Schrift: **Kumbh Sans** (OFL) für alles – ExtraBold 800 für Überschriften, 
 
 Die Vorschaubilder wurden aus diesen Dateien mit Playwright gerendert. Die Dunkel-Artboards (`*-dunkel.dc.html`) und `Start-Mobil.dc.html` binden nur die hellen Seiten mit anderem Modus bzw. schmaler Breite ein.
 
+## Vorlage für Aushänge und weitere Designs
+
+Aushänge, Plakate, Flyer und Social-Motive starten bei [`vorlage/aushang-a4.html`](vorlage/aushang-a4.html)
+(Anleitung: [`vorlage/README.md`](vorlage/README.md)). Farben, Schrift und Regeln
+daraus gelten unverändert – es wird nichts neu gemischt und keine zweite Schrift
+eingeführt. Wenn eine Farbe fehlt, wird das Markenblatt [`canvas/Marke.dc.html`](canvas/Marke.dc.html)
+erweitert, nicht die einzelne Datei.
+
 ## Platzhalter
 
 - Gelb markierter Text = offener Punkt (`TODO`), nichts davon ist erfunden.
