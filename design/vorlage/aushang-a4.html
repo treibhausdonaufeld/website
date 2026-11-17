@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Aushang · Treibhaus Donaufeld</title>
+<!--
+  VORLAGE – Aushang A4 (210 × 297 mm), Treibhaus Donaufeld
+  ---------------------------------------------------------
+  Für alle Aushänge, Plakate und weiteren Designs im Treibhaus: Farben und
+  Schrift kommen ausschließlich aus der Markenvorlage (design/canvas/Marke.dc.html
+  und design/README.md). Nichts davon überschreiben – wenn eine Farbe fehlt,
+  erst das Markenblatt erweitern.
+
+  Öffnen: Datei im Browser öffnen (file:///…/design/vorlage/aushang-a4.html),
+  dann „Drucken“ → „Als PDF speichern“, Papier A4, Ränder: keine,
+  Hintergrundgrafiken: an.
+
+  Text ersetzen: alles in [eckigen Klammern] und die gelb markierten Stellen
+  (<mark class="todo">prüfen</mark>) sind Platzhalter. Gelb wird nicht
+  mitgedruckt, wenn die Stelle ersetzt wird.
+-->
+<style>
+  /* Schrift: Kumbh Sans, selbst gehostet (OFL, siehe fonts/KumbhSans-OFL.txt) */
+  @font-face {
+    font-family: 'Kumbh Sans';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: block;
+    src: url('fonts/kumbh-sans-latin-wght-normal.woff2') format('woff2-variations');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+      U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+      U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: 'Kumbh Sans';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: block;
+    src: url('fonts/kumbh-sans-latin-ext-wght-normal.woff2') format('woff2-variations');
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+      U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+      U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  }
+
+  /* Farb-Tokens 1:1 aus src/styles/tokens.css (= design/canvas, .th / .th.dark) */
+  :root {
+    --bg: #faf8f3;
+    --surface: #ffffff;
+    --surface-2: #ece6f4;
+    --tint: #f0ece2;
+    --line: #e2ddd1;
+    --line-soft: #ede9e0;
+    --ink: #1e1c19;
+    --muted: #5f5a50;
+    --primary: #4a2c7a;
+    --primary-hover: #3a2262;
+    --on-primary: #ffffff;
+    --primary-text: #2f4410;
+    --link: #5d7a10;
+    --icon: #5d7a10;
+    --band: #34460a;
+    --on-band: #ffffff;
+    --band-accent: #ece6f4;
+    --on-accent: #2a1946;
+    --hint: #ece6f4;
+    --err: #a3261b;
+    --todo-bg: #fff0b3;
+    --todo-ink: #5e4300;
+  }
+  :root[data-theme='dark'] {
+    --bg: #151410;
+    --surface: #1f1d19;
+    --surface-2: #2a2238;
+    --tint: #26231e;
+    --line: #36322b;
+    --line-soft: #2c2924;
+    --ink: #f1eee6;
+    --muted: #b3ada0;
+    --primary: #b7a2dc;
+    --on-primary: #1e1c19;
+    --link: #b9d27a;
+    --icon: #b9d27a;
+    --band: #34460a;
+    --on-band: #ffffff;
+    --band-accent: #ece6f4;
+    --on-accent: #2a1946;
+    --hint: #2a2238;
+  }
+
+  @page { size: A4; margin: 0; }
+
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Kumbh Sans', system-ui, sans-serif;
+    font-weight: 400;
+    color: var(--ink);
+    background: #d8d4c9;       /* nur Bildschirm: grauer Tisch ums Blatt */
+    font-size: 11pt;
+    line-height: 1.5;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sheet {
+    width: 210mm;
+    height: 297mm;
+    margin: 0 auto;
+    padding: 16mm 16mm 12mm;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    gap: 7mm;
+    overflow: hidden;
+  }
+
+  @media screen {
+    .sheet {
+      margin: 10mm auto;
+      box-shadow: 0 2mm 6mm rgba(0, 0, 0, .25);
+    }
+  }
+
+  /* Kopf: Marke links, Anlass rechts */
+  .kopf {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 6mm;
+  }
+
+  .kopf img.marke { height: 13mm; width: auto; display: block; }
+
+  .kopf .rubrik {
+    text-align: right;
+    font-size: 8.5pt;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    line-height: 1.35;
+  }
+
+  /* Titelblock */
+  .kicker {
+    font-size: 9pt;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--link);
+    margin: 0 0 3mm;
+  }
+
+  h1 {
+    font-size: 40pt;
+    font-weight: 800;
+    line-height: 1.03;
+    letter-spacing: -.015em;
+    margin: 0;
+    max-width: 22ch;
+  }
+
+  .unterzeile {
+    font-size: 15pt;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--primary);
+    margin: 4mm 0 0;
+    max-width: 30ch;
+  }
+
+  .fliesstext {
+    font-size: 12pt;
+    max-width: 46ch;
+    margin: 4mm 0 0;
+  }
+
+  .fliesstext p { margin: 0 0 2.5mm; }
+
+  /* Faktentafel: wer, wann, wo, was kostet es */
+  .fakten {
+    background: var(--tint);
+    border-radius: 3mm;
+    padding: 7mm 8mm;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5mm 8mm;
+  }
+
+  .fakten .fakt dt {
+    font-size: 8.5pt;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 1mm;
+  }
+
+  .fakten .fakt dd {
+    margin: 0;
+    font-size: 12.5pt;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .fakten .fakt dd small {
+    display: block;
+    font-size: 9.5pt;
+    font-weight: 400;
+    color: var(--muted);
+    margin-top: 1mm;
+  }
+
+  /* Hinweisfläche (Holunderblüte, immer dunkle Schrift) */
+  .hinweis {
+    background: var(--hint);
+    color: var(--ink);
+    border-radius: 3mm;
+    padding: 6mm 8mm;
+    font-size: 11.5pt;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .hinweis a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+  .platz { flex: 1 1 auto; min-height: 2mm; }
+
+  /* Kontaktband: Moos, weiße Schrift */
+  .band {
+    background: var(--band);
+    color: var(--on-band);
+    border-radius: 3mm;
+    padding: 6mm 8mm;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6mm;
+  }
+
+  .band .sag {
+    font-size: 16pt;
+    font-weight: 800;
+    letter-spacing: -.01em;
+    margin: 0;
+  }
+
+  .band .weg {
+    font-size: 10pt;
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: right;
+  }
+
+  .band a { color: var(--band-accent); text-decoration: none; }
+
+  /* Fußzeile */
+  footer {
+    border-top: .4mm solid var(--line);
+    padding-top: 4mm;
+    display: flex;
+    justify-content: space-between;
+    gap: 6mm;
+    font-size: 9pt;
+    color: var(--muted);
+  }
+
+  footer strong { color: var(--ink); font-weight: 700; }
+
+  /* Offene Stellen sichtbar markieren – wie in den Entwürfen */
+  mark.todo {
+    background: var(--todo-bg);
+    color: var(--todo-ink);
+    padding: 0 1mm;
+    border-radius: 1mm;
+  }
+
+  /* QR-Platzhalter: nur wenn nichts Echtes eingebettet ist */
+  .qr {
+    width: 26mm;
+    height: 26mm;
+    flex: 0 0 26mm;
+    border: .4mm dashed var(--band-accent);
+    border-radius: 2mm;
+    color: var(--band-accent);
+    font-size: 7.5pt;
+    font-weight: 600;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    line-height: 1.2;
+    padding: 2mm;
+  }
+</style>
+</head>
+<body>
+  <!--
+    Hellmodus ist Standard (drucken). Für eine Bildschirm-/Social-Variante
+    setze <html data-theme="dark"> – dieselben Tokens, nur umgedreht.
+  -->
+  <div class="sheet">
+
+    <header class="kopf">
+      <img class="marke" src="../logo/logo-gruen.png" alt="Treibhaus Donaufeld">
+      <div class="rubrik">
+        Nachbarschaft An der Schanze<br>
+        21. Bezirk, Wien
+      </div>
+    </header>
+
+    <main>
+      <p class="kicker">[Anlass] · [Monat Jahr]</p>
+      <h1>[Was hier passiert – in vier bis sieben Wörtern]</h1>
+      <p class="unterzeile">[Ein Satz, der sagt, für wen es ist und warum man kommen soll.]</p>
+      <div class="fliesstext">
+        <p>[Zwei bis drei kurze Sätze. Was passiert, was man mitnehmen soll, ob man etwas mitbringen muss. Du-Form, keine Werbesprache.]</p>
+      </div>
+    </main>
+
+    <dl class="fakten">
+      <div class="fakt">
+        <dt>Wann</dt>
+        <dd>[Samstag, 14. März] <small>[13:30–16:30, komm und geh wie du magst]</small></dd>
+      </div>
+      <div class="fakt">
+        <dt>Wo</dt>
+        <dd>[Viertelsaal, Erdgeschoß] <small>Simone-Veil-Gasse 7, 1210 Wien</small></dd>
+      </div>
+      <div class="fakt">
+        <dt>Für wen</dt>
+        <dd>[Alle aus dem Viertel] <small>[Keine Anmeldung nötig]</small></dd>
+      </div>
+      <div class="fakt">
+        <dt>Kosten</dt>
+        <dd>[Frei] <small>[Spendenempfehlung auf Anfrage]</small></dd>
+      </div>
+    </dl>
+
+    <p class="hinweis">
+      [Kurzer Hinweis: Zugang barrierefrei, Kinder willkommen, was mitzubringen ist.]
+      <mark class="todo">prüfen</mark>
+    </p>
+
+    <div class="platz"></div>
+
+    <section class="band">
+      <p class="sag">Sag hallo.</p>
+      <div class="qr">[QR-Code<br>matrix.to]</div>
+      <div class="weg">
+        Fragen oder Ideen?<br>
+        <a href="https://matrix.to/#/#hallo:treibhausdonaufeld.at">#hallo:treibhausdonaufeld.at</a><br>
+        hallo@treibhausdonaufeld.at
+      </div>
+    </section>
+
+    <footer>
+      <div><strong>Treibhaus Donaufeld</strong><br>Simone-Veil-Gasse 7, 1210 Wien</div>
+      <div style="text-align:right">Offene Räume fürs Viertel<br>treibhausdonaufeld.at</div>
+    </footer>
+
+  </div>
+</body>
+</html>
