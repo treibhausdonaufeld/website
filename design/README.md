@@ -34,6 +34,8 @@ Designentwürfe vom November 2026 für die neue Website mit Raumbuchung. Ausgang
 
 Dunkelmodus: Hintergrund `#151410`, Logo in `#B9D27A`, Buttons in `#B7A2DC` mit dunkler Schrift. Alle Werte stehen als CSS-Variablen (`.th` und `.th.dark`) am Anfang jeder Seitendatei in [`canvas/`](canvas/).
 
+Kompakte Übersicht mit allen Tokens, Kontrastwerten und Kombinationsregeln (für Menschen und Agenten): [`../DESIGN.md`](../DESIGN.md).
+
 Schrift: **Kumbh Sans** (OFL) für alles – ExtraBold 800 für Überschriften, Regular 400 ab 16 px für Text. Auf der Website selbst gehostet.
 
 ## Logo
