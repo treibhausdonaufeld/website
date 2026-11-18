@@ -18,17 +18,22 @@ Schrift Kumbh Sans aus [`../vorlage/fonts/`](../vorlage/fonts/), Logo aus [`../l
 Hausinterner Aushang (UG IT) für alle Bewohner:innen:
 
 - Warum: Login in unserer Form nur noch in der Enterprise-Version, die viel kostet.
-- Was: Matrix als offenes Protokoll, Element als App; Vorteile in einem Satz.
+- Was: Matrix als offenes Protokoll, Element als App; Vorteile inklusive Audio- und
+  Videoanrufen direkt in der App – darum die Bitte, die App zu installieren.
 - Fristen: bis 30.11. Rocketchat normal · ab 1.12. Read-only · bis 1.1.2027 lesbar.
-- Zu tun: Element jetzt installieren, Wichtiges in die Collectives oder den neuen Chat kopieren.
+- Hilfe: ein Satz – bei Problemen im Kanal `#Computer-Hilfe` fragen.
 - Installationstreffen: Sonntag, 22.11., 9:00–12:00, Gemeinschaftsküche (2. OG).
 
-Der QR-Code im Kontaktband zeigt auf <https://element.io/download> (App-Download).
+Der QR-Code im Kontaktband zeigt auf die Installationsanleitung im Collectives:
+<https://wir.treibhausdonaufeld.at/apps/collectives/Treibhausdonaufeld-1/Matrix-Chat-Element-Installation-15276561>
+(QR-Version 7, 45 Module, 30 mm Symbol auf 36 mm weißem Feld – Module 0,67 mm).
+
+## Aufbau
+
+Kein Footer und kein Adressblock: Der Aushang hängt im Haus, das Kontaktband schließt
+die Seite ab.
 
 ## Offen
 
-- Die Installationsanleitung liegt im Collectives und hat (noch) keine öffentliche URL –
-  im Aushang steht daher nur „Anleitung im Collectives“. Sobald es einen Link gibt:
-  QR-Code neu erzeugen und Bandtext auf den Link umstellen.
-- Kein Matrix-Alias für den Kanal #Computer-Hilfe bestätigt, deshalb steht dort nur der
-  Rocketchat-Kanal.
+- Kein Matrix-Alias für den Kanal `#Computer-Hilfe` bestätigt, deshalb steht dort nur der
+  Kanalname ohne Link.
