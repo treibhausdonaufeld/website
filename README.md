@@ -4,6 +4,7 @@ Neue Website des Wohnprojekts Treibhaus Donaufeld, Simone-Veil-Gasse 7, 1210 Wie
 
 - [`docs/implementierungsplan.md`](docs/implementierungsplan.md) – Technik, Architektur, Datenmodell und Phasen der Umsetzung
 - [`DESIGN.md`](DESIGN.md) – Farben, Schrift (Kumbh Sans), Logo und Kombinationsregeln für UI-Arbeit
+- [`docs/sicherheit-und-staging.md`](docs/sicherheit-und-staging.md) – Härtungskonzept: Befunde, Maßnahmen, Staging mit Abnahme vor dem Merge
 - [`design/`](design/) – Designentwürfe, Farben, Logo und Briefing
 
 Eine Astro-Anwendung (Node-Adapter) mit SQLite: Inhaltsseiten werden beim Build gerendert, Startseite, Termine, Buchung, Admin-Bereich und Kalender-Feeds laufen auf dem Server. Webserver, Buchungslogik, Matrix-Bot und Hintergrundjobs teilen sich einen Prozess.
