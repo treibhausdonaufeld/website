@@ -13,11 +13,11 @@ const events = upcomingEvents(getDb(), 4);
 Astro.response.headers.set('Cache-Control', 'public, max-age=60');
 const nl = Astro.url.searchParams.get('newsletter');
 ---
-<Base title="Treibhaus Donaufeld – ein Haus mit offener Tür" alternate="/en/">
+<Base title="Treibhaus Donaufeld" alternate="/en/">
   <section class="wrap hero">
     <div class="intro">
       <span class="eyebrow">Simone-Veil-Gasse 7 · Donaufeld</span>
-      <h1>Ein Haus mit<br />offener Tür.</h1>
+      <h1>Treibhaus<br />Donaufeld</h1>
       <p class="lead">Im Erdgeschoß vom Treibhaus gibt es zwei Räume für das ganze Viertel: den Viertelsaal und die Viertelküche. Hier treffen sich Nachbar:innen, kochen, feiern und planen Neues.</p>
       <p class="row ways">
         <a class="btn" href="/buchen">Raum buchen</a>
