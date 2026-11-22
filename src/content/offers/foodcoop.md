@@ -6,7 +6,7 @@ rhythmus: "Abholung: [TODO: Abholzeiten]"
 raum: "[TODO: Lagerraum]"
 kosten: "[TODO: Mitgliedsbeitrag]"
 neuHier: false
-status: aktiv
+status: geplant
 reihenfolge: 5
 ---
 

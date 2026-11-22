@@ -13,7 +13,7 @@ In der Foodcoop kaufen wir gemeinsam Lebensmittel direkt bei Bäuer:innen und kl
 
 ## Status
 
-[TODO: Status der Foodcoop]
+Die Foodcoop ist noch in Planung. Abholzeiten, Beitritt und Beitrag stehen deshalb noch nicht fest.
 
 ## Mitglied werden
 
