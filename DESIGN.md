@@ -113,10 +113,10 @@ All values are CSS custom properties. Both themes are defined in **three** place
 
 | Token | Light | Dark | Role |
 | --- | --- | --- | --- |
-| `--band` | `#34460A` | `#1E2A0E` | Dark “Sag hallo” callout band (moss) |
-| `--band-2` | `#2A3908` | `#18220A` | Second band shade |
+| `--band` | `#5D7A10` | `#1E2A0E` | “Sag hallo” callout band (primary green) |
+| `--band-2` | `#4A620C` | `#18220A` | Second band shade |
 | `--on-band` | `#FFFFFF` | `#F1EEE6` | Text on band |
-| `--on-band-2` | `#DCE3CC` | `#C9D0B6` | Secondary text on band |
+| `--on-band-2` | `#F3F6EC` | `#C9D0B6` | Secondary text on band |
 | `--band-accent` | `#ECE6F4` | `#ECE6F4` | Button/panel inside band (elderflower) |
 | `--on-accent` | `#2A1946` | `#2A1946` | Text on band accent |
 | `--footer` | `#1E1C19` | `#0E0D0B` | Footer background |
@@ -164,8 +164,8 @@ Normal text needs ≥ 4.5 : 1, large/bold text ≥ 3 : 1, UI borders ≥ 3 : 1.
 | `--muted` `#5F5A50` on `--bg` | 6.5 : 1 | Meta text, captions |
 | `--on-primary` white on `--primary` `#4A2C7A` | 10.9 : 1 | **Primary button**: “Raum buchen” |
 | `--on-accent` `#2A1946` on `--band-accent` `#ECE6F4` | 13.0 : 1 | Light button/panel inside the dark band |
-| `--on-band` white on `--band` `#34460A` | 10.4 : 1 | “Sag hallo” band text |
-| `--on-band-2` `#DCE3CC` on `--band` | 7.9 : 1 | Secondary text in the band |
+| `--on-band` white on `--band` `#5D7A10` | 4.9 : 1 | “Sag hallo” band text |
+| `--on-band-2` `#F3F6EC` on `--band` | 4.5 : 1 | Secondary text in the band |
 | `--link` `#5D7A10` on `--surface` white | 4.9 : 1 | Links and inline links on white |
 | `--link` on `--bg` `#FAF8F3` | 4.7 : 1 | Links on the page background (just passes) |
 | `--primary-text` `#2F4410` on `--bg` | 10.1 : 1 | Green-tinted headings |

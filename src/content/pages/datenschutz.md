@@ -36,10 +36,6 @@ Codes und Links zur Bestätigung speichern wir nur als Prüfsumme (Hash). Sie la
 
 Wenn du „Offen für alle“ wählst, zeigen wir den Titel deiner Veranstaltung, Raum und Zeit im öffentlichen Terminkalender – nie deinen Namen oder Kontakt.
 
-## Idee schicken („Selbst etwas anbieten“)
-
-Wenn du uns über das Formular eine Idee schickst, bekommen wir deinen Namen, deinen Kontakt und deinen Text als E-Mail an hallo@treibhausdonaufeld.at; die zuständige Gruppe im Haus bekommt einen Hinweis in ihrem internen Kanal. Auf der Website selbst speichern wir das nicht. Wir verwenden die Angaben nur, um mit dir über die Idee zu reden (Art. 6 Abs. 1 lit. b und f DSGVO), und löschen die Nachricht, wenn die Sache erledigt ist.
-
 ## Nachrichten per E-Mail und Matrix
 
 E-Mails verschicken wir über den Mailserver des Hauses. Für Matrix-Nachrichten nutzen wir unseren eigenen Matrix-Server (treibhausdonaufeld.at). Je nachdem, wo dein E-Mail- oder Matrix-Konto liegt, wird die Nachricht auch über deinen Anbieter zugestellt.

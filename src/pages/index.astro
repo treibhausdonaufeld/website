@@ -22,7 +22,6 @@ const nl = Astro.url.searchParams.get('newsletter');
       <p class="row ways">
         <a class="btn" href="/buchen">Raum buchen</a>
         <a class="go" href="/termine">Was ist los →</a>
-        <a class="go" href="/anbieten">Selbst was anbieten →</a>
       </p>
     </div>
     <div class="house-photo"><Photo src="/images/haus/treibhaus-aussen.jpg" alt="Das Treibhaus von außen, Simone-Veil-Gasse 7" ratio="3/2" /></div>
@@ -40,7 +39,7 @@ const nl = Astro.url.searchParams.get('newsletter');
       <p class="small"><a href="/termine.ics">Kalender abonnieren (iCal)</a></p>
     </div>
     <div>
-      {events.length ? <EventList events={events} showAdd /> : <p class="muted">Gerade stehen keine Termine im Kalender.</p>}
+      {events.length ? <EventList events={events} /> : <p class="muted">Gerade stehen keine Termine im Kalender.</p>}
     </div>
   </section>
 
@@ -61,21 +60,11 @@ const nl = Astro.url.searchParams.get('newsletter');
     </div>
   </section>
 
-  <section class="section tint" id="mitmachen" aria-labelledby="mm-h">
-    <div class="wrap grid-2 mm">
-      <h2 id="mm-h" class="mm-h">Dir fehlt was im Viertel? <span>Mach’s hier.</span></h2>
-      <div>
-        <p>Reparaturcafé, Spieleabend, Tanzkurs, Kindercafé – wenn du eine Idee hast, finden wir einen Raum dafür.</p>
-        <p><strong>Idee schicken → kurz reden → Raum bekommen</strong> <mark class="todo">Konditionen</mark></p>
-        <p class="row"><a class="btn ghost" href="/anbieten">Idee einreichen</a> <a href="/mitmachen">Lieber mithelfen?</a></p>
-      </div>
-    </div>
-  </section>
-
   <section class="wrap section grid-2" id="haus">
     <div>
       <span class="eyebrow">Das Haus</span>
-      <p class="statement">Rund 80 Erwachsene und 40 Kinder wohnen im Treibhaus. Wir teilen Küche, Bibliothek und Sauna – und das Erdgeschoß mit dem ganzen Viertel.</p>
+      <p class="statement">Das Treibhaus ist eine gemeinschaftliche Wohngruppe im Donaufeld.</p>
+      <p>Rund 80 Erwachsene und 40 Kinder wohnen hier zusammen, teilen Küche, Bibliothek und Sauna und entscheiden vieles gemeinsam. Im Erdgeschoß gibt es zwei Räume für alle im Viertel – Viertelsaal und Viertelküche –, die wir gerne mit den Nachbar:innen teilen.</p>
       <a class="go" href="/ueber-uns">Mehr über uns →</a>
     </div>
     <div>
@@ -116,9 +105,6 @@ const nl = Astro.url.searchParams.get('newsletter');
   .roomlist a { font-size: 20px; font-weight: 800; color: var(--ink); text-decoration: none; }
   .roomlist a:hover { color: var(--primary); text-decoration: underline; }
   .roomlist span { font-size: 14px; color: var(--muted); }
-  .mm { align-items: center; }
-  .mm-h { font-size: clamp(36px, 5vw, 56px); letter-spacing: -0.03em; }
-  .mm-h span { color: var(--primary); display: block; }
   .statement { font-size: 21px; font-weight: 600; line-height: 1.4; margin: 12px 0 16px; }
   .map-link img { width: 100%; border: 1px solid var(--line); border-radius: 4px; }
 </style>

@@ -23,10 +23,9 @@ Designentwürfe vom November 2026 für die neue Website mit Raumbuchung. Ausgang
 
 | Rolle | Wert | Verwendung |
 | --- | --- | --- |
-| Primär · Grün | `#5D7A10` | Logo, Links, Icons |
+| Primär · Grün | `#5D7A10` | Logo, Links, Icons, Band „Sag hallo“ |
 | Sekundär · Holunder | `#4A2C7A` | Buttons (immer mit weißer Schrift), Hervorhebungen |
 | Sekundär · Holunderblüte | `#ECE6F4` | Helle Flächen und Hinweise, immer mit dunkler Schrift |
-| Moos (abgeleitet) | `#34460A` | Dunkles Band „Sag hallo“ |
 | Tinte | `#1E1C19` | Text |
 | Stein | `#5F5A50` | Nebentext |
 | Papier | `#FAF8F3` | Seitenhintergrund |

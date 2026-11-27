@@ -3,8 +3,8 @@ export type Lang = 'de' | 'en';
 export const nav = {
   de: [
     { href: '/termine', label: 'Was ist los' },
-    { href: '/raeume', label: 'Räume' },
-    { href: '/mitmachen', label: 'Mitmachen' },
+    { href: '/raeume', label: 'Viertelräume' },
+    { href: '/foodcoop', label: 'Foodcoop' },
     { href: '/ueber-uns', label: 'Über uns' },
     { href: '/kontakt', label: 'Kontakt' },
   ],

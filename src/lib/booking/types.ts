@@ -121,7 +121,6 @@ export const ADMIN_EVENTS = {
   auto: { label: 'Anfrage automatisch freigegeben', hint: '', default: true },
   storno: { label: 'Buchung von der buchenden Person storniert', hint: '', default: true },
   abgelaufen: { label: 'Haltefrist abgelaufen, ohne Entscheidung', hint: '', default: true },
-  idee: { label: 'Neue Idee über „Selbst etwas anbieten“', hint: '', default: true },
 } as const;
 export type AdminEvent = keyof typeof ADMIN_EVENTS;
 export const ADMIN_EVENT_KEYS = Object.keys(ADMIN_EVENTS) as AdminEvent[];
