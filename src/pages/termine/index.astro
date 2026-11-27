@@ -1,8 +1,6 @@
 ---
 export const prerender = false;
-import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import OfferCard from '../../components/OfferCard.astro';
 import { getDb } from '../../lib/db';
 import { publicEvents } from '../../lib/booking/service';
 import { CATEGORIES, CATEGORY_LABEL, type Category, type PublicEvent } from '../../lib/booking/types';
@@ -12,10 +10,6 @@ const q = Astro.url.searchParams;
 const kat = (CATEGORIES as readonly string[]).includes(q.get('kategorie') ?? '') ? (q.get('kategorie') as Category) : null;
 const view = q.get('ansicht') === 'kalender' ? 'kalender' : 'liste';
 const monthParam = /^\d{4}-\d{2}$/.test(q.get('monat') ?? '') ? q.get('monat')! : today().slice(0, 7);
-
-const offers = (await getCollection('offers'))
-  .filter((o) => o.data.status !== 'pausiert' && (!kat || o.data.kategorie === kat))
-  .sort((a, b) => a.data.reihenfolge - b.data.reihenfolge);
 
 const db = getDb();
 let events: PublicEvent[];
@@ -53,7 +47,7 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
 <Base title="Was ist los" description="Offene Angebote und Termine im Treibhaus Donaufeld – für alle aus dem Viertel.">
   <section class="wrap section">
     <h1>Was ist los im Treibhaus?</h1>
-    <p class="lead">Diese Angebote sind offen für alle aus dem Viertel. Die meisten kosten nichts oder eine Spende. Du musst niemanden kennen – komm einfach vorbei.</p>
+    <p class="lead">Diese Angebote sind offen für alle aus dem Viertel. Du musst niemanden kennen – komm einfach vorbei.</p>
 
     <nav aria-label="Nach Kategorie filtern" class="filters">
       <a href={`/termine${qs({ kategorie: null })}`} aria-current={!kat ? 'true' : undefined}>Alle</a>
@@ -61,21 +55,7 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
       <a class="ical" href="/termine.ics">Kalender abonnieren (iCal)</a>
     </nav>
 
-    <h2>Regelmäßig im Haus</h2>
-    <div class="grid-3">
-      {offers.map((o) => <OfferCard offer={o} />)}
-      <article class="card idea">
-        <span class="cat">Deine Idee</span>
-        <h3>Hier fehlt etwas?</h3>
-        <p>Kindercafé, Kochkurs, Spieleabend, Ausstellung? Biete es selbst an. Wir helfen dir mit Raum und Werbung.</p>
-        <a class="btn" href="/anbieten">Idee einreichen</a>
-      </article>
-    </div>
-    <p class="muted small">Weitere Bewegungsangebote: <mark class="todo">TODO: Liste (Yoga, Tanz, Kinderturnen …)</mark></p>
-  </section>
-
-  <section class="wrap section" aria-labelledby="alle-h" id="termine">
-    <div class="row spread">
+    <div class="row spread" id="termine">
       <h2 id="alle-h">Alle Termine</h2>
       <div class="toggle" role="group" aria-label="Ansicht">
         <a href={`/termine${qs({ ansicht: null, monat: null })}#termine`} aria-current={view === 'liste' ? 'true' : undefined}>Liste</a>
@@ -138,8 +118,6 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60');
   .filters a { border: 2px solid var(--line-strong); border-radius: 999px; padding: 6px 16px; text-decoration: none; color: var(--ink); font-weight: 600; }
   .filters a[aria-current] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
   .filters .ical { border: 0; text-decoration: underline; color: var(--link); margin-left: auto; font-weight: 400; }
-  .idea { background: var(--surface-2); border-color: var(--surface-2); }
-  .idea .btn { align-self: flex-start; }
   .spread { justify-content: space-between; }
   .toggle { display: flex; border: 2px solid var(--primary); border-radius: 8px; overflow: hidden; }
   .toggle a { padding: 6px 16px; text-decoration: none; color: var(--primary); font-weight: 700; }

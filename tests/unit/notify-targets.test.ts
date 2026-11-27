@@ -38,7 +38,7 @@ describe('Benachrichtigungsziele', () => {
     addTarget(db, 'test', { kind: 'rocketchat', target: '#raum-ag', label: null, events: ['anfrage'], enabled: true });
     addTarget(db, 'test', { kind: 'matrix', target: '#kaputt:example.org', label: null, events: ['anfrage'], enabled: true });
     addTarget(db, 'test', { kind: 'matrix', target: '!pausiert:example.org', label: null, events: ['anfrage'], enabled: false });
-    addTarget(db, 'test', { kind: 'email', target: 'nur-idee@example.org', label: null, events: ['idee'], enabled: true });
+    addTarget(db, 'test', { kind: 'email', target: 'nur-abgelaufen@example.org', label: null, events: ['abgelaufen'], enabled: true });
     const { sent, senders } = recorder();
     const results = await dispatch(db, 'anfrage', msg, senders);
     expect(sent.sort()).toEqual(['email raum-ag@example.org [Raum-AG] ' + msg.title, 'rc #raum-ag *' + msg.title + '*']);

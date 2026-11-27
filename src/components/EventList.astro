@@ -2,8 +2,8 @@
 import type { PublicEvent } from '../lib/booking/types';
 import { CATEGORY_LABEL, type Category } from '../lib/booking/types';
 import { fmt, localParts } from '../lib/time';
-interface Props { events: PublicEvent[]; showAdd?: boolean }
-const { events, showAdd = false } = Astro.props;
+interface Props { events: PublicEvent[] }
+const { events } = Astro.props;
 ---
 <ul class="events">
   {events.map((e) => (
@@ -19,15 +19,6 @@ const { events, showAdd = false } = Astro.props;
       {e.category && <span class="cat">{CATEGORY_LABEL[e.category as Category] ?? e.category}</span>}
     </li>
   ))}
-  {showAdd && (
-    <li>
-      <div class="date plus" aria-hidden="true">+</div>
-      <div class="what">
-        <h3>Dein Angebot?</h3>
-        <p class="muted small">Kochabend, Spieletreff, Kurs – der Saal und die Küche sind noch oft frei. <a href="/anbieten">So geht’s</a></p>
-      </div>
-    </li>
-  )}
 </ul>
 <style>
   .events { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }

@@ -30,10 +30,10 @@ Regeln stehen in [`../README.md`](../README.md#farben).
 
 - **Schrift:** nur Kumbh Sans. Überschriften ExtraBold 800, Fließtext Regular 400
   und nie unter 16 px bzw. 10 pt auf Papier.
-- **Grün `#5D7A10`** für Logo, Links, Icons – nie als große Fläche, nie auf Sand.
+- **Grün `#5D7A10`** für Logo, Links, Icons und das Kontaktband „Sag hallo“ –
+  sonst nie als große Fläche, nie auf Sand.
 - **Holunder `#4A2C7A`** für Buttons und Hervorhebungen, immer mit weißer Schrift.
 - **Holunderblüte `#ECE6F4`** nur als Fläche, darauf immer dunkle Schrift.
-- **Moos `#34460A`** für das Kontaktband „Sag hallo“.
 - **Papier `#FAF8F3`** als Grund, **Sand `#F0ECE2`** für ruhige Abschnitte,
   **Tinte `#1E1C19`** für Text, **Stein `#5F5A50`** für Nebentext.
 - Großflächige Volltonflächen sparsam – Aushänge hängen oft auf grauem Papier und
